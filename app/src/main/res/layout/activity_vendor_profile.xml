@@ -49,43 +49,15 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Vendor Full Name -->
                     <TextView
-                        android:id="@+id/textViewFullName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:text="Full Name: John Doe"
+                        android:id="@+id/profileDetailsTextView"
+                        android:layout_width="293dp"
+                        android:layout_height="152dp"
+                        android:layout_gravity="center"
+                        android:text="User Profile Details from db"
                         android:textColor="@color/black"
                         android:textSize="18sp" />
 
-                    <!-- Vendor Date of Birth -->
-                    <TextView
-                        android:id="@+id/textViewDob"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:text="Date of Birth: 01-01-1980"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-
-                    <!-- Vendor Phone Number -->
-                    <TextView
-                        android:id="@+id/textViewPhoneNumber"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:textColor="@color/black"
-                        android:text="Phone Number: +679 9965432"
-                        android:textSize="18sp" />
-                    <TextView
-                        android:id="@+id/textViewEmail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:text="Email: jdoe@gmail.com"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
@@ -100,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:text="Stall Number: 5"
+                    android:text="Stall Number from db"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
             </androidx.cardview.widget.CardView>
@@ -130,11 +102,11 @@
                         android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/checkboxItem"
+                            android:id="@+id/viewProduct"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
-                            android:text="Carrot, Mango, Lettuce, Tomato" />
+                            android:text="ProductfromDb" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -172,7 +144,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
         <Button
-            android:id="@+id/buttonEdit"
+            android:id="@+id/editButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"

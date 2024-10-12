@@ -25,6 +25,7 @@
         <activity android:name=".AdminHomeActivity" />
         <activity android:name=".ManagerHomeActivity" />
         <activity android:name=".VendorApplicationActivity" />
+        <activity android:name=".VendorProfileActivity" />
 
     </application>
 
