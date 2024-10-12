@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.example.cs218marketmanager.data.DatabaseHelper;
 import com.example.cs218marketmanager.data.model.User;
 
-public class RegisterActivity extends Activity {
+public class RegisterVendorActivity extends Activity {
     private EditText usernameEditText, emailEditText, passwordEditText,firstNameEditText,lastNameEditText;
     TextView textViewExistingUser;
     private Button registerButton;
@@ -21,7 +21,7 @@ public class RegisterActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_register);
+        setContentView(R.layout.activity_vendor_register);
 
         usernameEditText = findViewById(R.id.usernameRegisterEditText);
         emailEditText = findViewById(R.id.emailEditText);
@@ -43,15 +43,15 @@ public class RegisterActivity extends Activity {
                 String lastName = lastNameEditText.getText().toString().trim();
 
                 if (username.isEmpty() || email.isEmpty() || password.isEmpty() || firstName.isEmpty()||lastName.isEmpty()) {
-                    Toast.makeText(RegisterActivity.this, "All fields are required!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterVendorActivity.this, "All fields are required!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if(databaseHelper.usernameExists(username)){
-                    Toast.makeText(RegisterActivity.this, "Username Already Exists!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterVendorActivity.this, "Username Already Exists!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if(databaseHelper.emailExists(email)){
-                    Toast.makeText(RegisterActivity.this, "Email Already Exists!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterVendorActivity.this, "Email Already Exists!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -61,20 +61,21 @@ public class RegisterActivity extends Activity {
                 user.setPassword(password);
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
+                user.setRole(User.Role.VENDOR);
                 long result = databaseHelper.addUser(user);
 
                 if (result > 0) {
-                    Toast.makeText(RegisterActivity.this, "Registered successfully!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                    Toast.makeText(RegisterVendorActivity.this, "Vendor Registered successfully!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RegisterVendorActivity.this, LoginActivity.class));
                 } else {
-                    Toast.makeText(RegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterVendorActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         textViewExistingUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
+                Intent intent = new Intent(RegisterVendorActivity.this,LoginActivity.class);
                 startActivity(intent);
                 finish();
 

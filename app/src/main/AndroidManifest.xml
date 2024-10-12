@@ -19,8 +19,13 @@
 
         </activity>
         <activity android:name=".LoginActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".HomeFragment" />
+        <activity android:name=".RegisterVendorActivity" />
+        <activity android:name=".RegisterManagerActivity" />
+        <activity android:name=".VendorHomeActivity" />
+        <activity android:name=".AdminHomeActivity" />
+        <activity android:name=".ManagerHomeActivity" />
+        <activity android:name=".VendorApplicationActivity" />
+
     </application>
 
 
