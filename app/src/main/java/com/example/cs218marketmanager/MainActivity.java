@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -23,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         } else {
             // User is logged in, redirect to HomePageActivity
-            startActivity(new Intent(MainActivity.this, HomeFragment.class));
+            startActivity(new Intent(MainActivity.this, VendorHomeActivity.class));
         }
 
         // Close MainActivity so it's not in the back stack

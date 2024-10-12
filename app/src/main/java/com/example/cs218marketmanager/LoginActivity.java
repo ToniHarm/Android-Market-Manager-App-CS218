@@ -3,25 +3,16 @@ package com.example.cs218marketmanager;
 import android.app.Activity;
 import android.content.Intent; // Import Intent to navigate to another Activity
 import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import com.example.cs218marketmanager.data.DatabaseHelper;
 import com.example.cs218marketmanager.data.model.User;
 import com.example.cs218marketmanager.util.PreferencesHelper;
-import com.google.android.material.textfield.TextInputEditText;
 
 public class LoginActivity extends Activity {
 
@@ -59,7 +50,17 @@ public class LoginActivity extends Activity {
                     editor.apply();
                     PreferencesHelper preferencesHelper = new PreferencesHelper(LoginActivity.this);
 
-                    startActivity(new Intent(LoginActivity.this, HomeFragment.class));
+                    // Check user role and navigate accordingly
+                    if (user.getRole() == User.Role.ADMIN) {
+                        // Navigate to Admin Home
+                        startActivity(new Intent(LoginActivity.this, AdminHomeActivity.class));
+                    } else if (user.getRole() == User.Role.VENDOR) {
+                        // Navigate to Vendor Home
+                        startActivity(new Intent(LoginActivity.this, VendorHomeActivity.class));
+                    } else if (user.getRole() == User.Role.MANAGER) {
+                        // Navigate to Manager Home
+                        startActivity(new Intent(LoginActivity.this, ManagerHomeActivity.class));
+                    }
                 } else {
                     Toast.makeText(LoginActivity.this, "Invalid Credentials!", Toast.LENGTH_SHORT).show();
                 }
@@ -70,7 +71,7 @@ public class LoginActivity extends Activity {
         textViewNewUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+                startActivity(new Intent(LoginActivity.this, RegisterVendorActivity.class));
             }
         });
     }
