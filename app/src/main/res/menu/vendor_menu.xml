@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/vendor_home"
+        android:icon="@drawable/ic_home"
+        android:title="@string/home" />
+
+    <item
+        android:id="@+id/vendor_profile"
+        android:icon="@drawable/ic_person"
+        android:title="@string/profile" />
+
+    <item
+        android:id="@+id/vendor_notification"
+        android:icon="@drawable/ic_notification"
+        android:title="@string/notification" />
+
+    <item
+        android:id="@+id/vendor_finance"
+        android:icon="@drawable/money"
+        android:title="@string/finance" />
+
+    <item
+        android:id="@+id/vendor_setting"
+        android:icon="@drawable/ic_action_name"
+        android:title="@string/setting" />
+</menu>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Market Manager</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello, Blank Fragment!</string>
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+    <string name="notification">Notification</string>
+    <string name="setting">Setting</string>
+    <string name="finance">Finance</string>
+    <string name="login">Login</string>
+    <string name="application">Application</string>
+    <string name="registration">Registration</string>
+    <string name="payment">Payment</string>
+    <string name="vendor">Vendors</string>
+
+</resources>

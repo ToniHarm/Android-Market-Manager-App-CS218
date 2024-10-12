@@ -1,0 +1,14 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.CS218MarketManager" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/darkGreen</item>               <!-- Primary color -->
+        <item name="colorPrimaryVariant">@color/darkBlue</item>        <!-- Variant of primary color -->
+        <item name="colorOnPrimary">@color/white</item>                <!-- Text color on primary color -->
+        <item name="colorSecondary">@color/blue</item>                <!-- Secondary color -->
+        <item name="colorSecondaryVariant">@color/lightGrey</item>     <!-- Variant of secondary color -->
+        <item name="colorOnSecondary">@color/grey</item>              <!-- Text color on secondary color -->
+        <!-- Customize your theme here. -->
+
+    </style>
+</resources>
