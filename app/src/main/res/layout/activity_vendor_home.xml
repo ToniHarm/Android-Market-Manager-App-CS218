@@ -48,6 +48,7 @@
                     android:textStyle="bold" />
 
                 <Button
+                    android:id="@+id/btnVendorApp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/limeGreen"

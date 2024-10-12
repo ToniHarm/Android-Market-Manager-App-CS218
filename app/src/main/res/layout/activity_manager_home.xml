@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="16dp">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -30,9 +31,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="1dp"
                 android:padding="5dp"
-                android:text="Market Manager"
-                android:textColor="@color/black"
-                android:textSize="35sp"
+                android:text="Welcome Market Manager"
+                android:textColor="@color/mossGreen"
+                android:textSize="25sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -42,7 +43,7 @@
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="24dp"
                 android:text="Location: Suva Municipal Market"
-                android:textColor="@color/black"
+                android:textColor="@color/mossGreen"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -87,6 +88,19 @@
                     android:textSize="18sp" />
             </LinearLayout>
             </androidx.cardview.widget.CardView>
+
         </LinearLayout>
     </ScrollView>
-</FrameLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/manager_nav_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:backgroundTint="@color/mossGreen"
+        app:menu="@menu/manager_menu" />
+</androidx.constraintlayout.widget.ConstraintLayout>

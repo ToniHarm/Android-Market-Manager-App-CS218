@@ -22,6 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_FIRST_NAME = "firstName";
     private static final String COLUMN_LAST_NAME = "lastName";
     private static final String COLUMN_PROFILE_PIC = "profilePic";
+    private static final String COLUMN_ROLE = "role";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,17 +37,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_FIRST_NAME + " TEXT,"
                 + COLUMN_LAST_NAME + " TEXT,"
                 + COLUMN_PROFILE_PIC + " BLOB,"
-                + COLUMN_PASSWORD + " TEXT)";
-
+                + COLUMN_PASSWORD + " TEXT,"
+                + COLUMN_ROLE + " TEXT" +
+                ")";
         db.execSQL(CREATE_USER_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//        if (oldVersion < 2) {
-//            String alterTableQuery = "ALTER TABLE " + TABLE_RECIPE + " ADD COLUMN " + COLUMN_IMAGE_PATH + " TEXT";
-//            db.execSQL(alterTableQuery);
-//        }
+        if (oldVersion < 2) {
+            addDefaultAdminUserIfNotExists(db);
+        }
     }
     public long addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -57,10 +58,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_PASSWORD, user.getPassword());
         values.put(COLUMN_FIRST_NAME,user.getFirstName());
         values.put(COLUMN_LAST_NAME,user.getLastName());
+        values.put(COLUMN_ROLE, user.getRole().toString());
 
         long result = db.insert(TABLE_USER, null, values);
         db.close();
         return result;
+    }
+
+    public void addDefaultAdminUser(SQLiteDatabase db) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, "admin"); // Admin username
+        values.put(COLUMN_EMAIL, "admin@market.com"); // Admin email
+        values.put(COLUMN_PASSWORD, "admin123"); // Admin password (hash it if needed)
+        values.put(COLUMN_FIRST_NAME, "Admin");
+        values.put(COLUMN_LAST_NAME, "User");
+        values.put(COLUMN_ROLE, "ADMIN"); // Role for admin user
+
+        // Insert the admin user into the database
+        db.insert(TABLE_USER, null, values);
+    }
+
+    private void addDefaultAdminUserIfNotExists(SQLiteDatabase db) {
+        // Check if the admin user already exists
+        String selectQuery = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USERNAME + "='admin'";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // If the admin user does not exist, add it
+        if (!cursor.moveToFirst()) {
+            addDefaultAdminUser(db);
+        }
+        cursor.close();
     }
 
     public User getUser(String username) {
@@ -84,6 +111,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             int passwordIndex = cursor.getColumnIndex(COLUMN_PASSWORD);
             if (passwordIndex != -1) user.setPassword(cursor.getString(passwordIndex));
+
+            int roleIndex = cursor.getColumnIndex(COLUMN_ROLE);
+            if (roleIndex != -1) user.setRole(User.Role.valueOf(cursor.getString(roleIndex)));
         }
 
 
@@ -123,7 +153,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query("users",
-                new String[]{"id", "username", "email","password","firstName","lastName","profilePic"},
+                new String[]{"id", "username", "email","password","firstName","lastName","profilePic", "role"},
                 "id=?", // Selection criteria
                 new String[]{String.valueOf(userId)}, // Selection arguments
                 null, null, null);
@@ -138,7 +168,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String lastName = getColumnValue(cursor,"lastName");
             int profilePicColumnIndex = cursor.getColumnIndex("profilePic");
             byte[] profilePic = cursor.getBlob(profilePicColumnIndex);
-            User user = new User(id,username,email,firstName,lastName,profilePic);
+
+            String roleString = cursor.getString(cursor.getColumnIndexOrThrow("role"));
+            User.Role role = User.Role.valueOf(roleString);
+
+            User user = new User(id,username,email,firstName,lastName,profilePic,role);
             user.setPassword(password);
             System.out.println("User password from db helper: " + password);
             cursor.close();
