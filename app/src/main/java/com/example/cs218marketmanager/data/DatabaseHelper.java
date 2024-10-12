@@ -9,11 +9,18 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.cs218marketmanager.data.model.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "marketmanager.db";
     private static final int DATABASE_VERSION = 2;
     //Tables
     private static final String TABLE_USER = "users";
+    private static final String TABLE_APPLICATION = "vendorApplication";
+
+    private static final String COLUMN_ID = "id";
+
 
     // Column names for USER table
     private static final String COLUMN_USERNAME = "username";
@@ -23,6 +30,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_LAST_NAME = "lastName";
     private static final String COLUMN_PROFILE_PIC = "profilePic";
     private static final String COLUMN_ROLE = "role";
+
+    // Column names for APPLICATION table
+    public static final String TABLE_VENDOR_APPLICATION = "vendorApplication";
+    public static final String COLUMN_USER_ID = "user_id";
+    public static final String COLUMN_PRODUCT_NAME = "product_name";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,6 +53,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_ROLE + " TEXT" +
                 ")";
         db.execSQL(CREATE_USER_TABLE);
+
+        String CREATE_APPLICATION_TABLE = "CREATE TABLE " + TABLE_VENDOR_APPLICATION + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_USER_ID + " INTEGER, " +
+                COLUMN_PRODUCT_NAME + " TEXT, " +
+                "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
+        db.execSQL(CREATE_APPLICATION_TABLE);
+
+        addDefaultAdminUserIfNotExists(db);
     }
 
     @Override
@@ -88,6 +109,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             addDefaultAdminUser(db);
         }
         cursor.close();
+    }
+
+    public void addVendorApplication(long userId, String productName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_ID, userId);
+        values.put(COLUMN_PRODUCT_NAME, productName);
+
+        db.insert(TABLE_VENDOR_APPLICATION, null, values);
+        db.close();
     }
 
     public User getUser(String username) {
@@ -179,6 +211,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return user;
         }
         return null;
+    }
+
+    public List<String> getUserProducts(long userId) {
+        List<String> products = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT " + COLUMN_PRODUCT_NAME + " FROM " + TABLE_VENDOR_APPLICATION +
+                " WHERE " + COLUMN_USER_ID + " = ?";
+
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String productName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_NAME));
+                products.add(productName);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return products;
     }
 
 
