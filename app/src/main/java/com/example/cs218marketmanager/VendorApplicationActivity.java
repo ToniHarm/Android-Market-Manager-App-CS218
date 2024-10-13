@@ -100,10 +100,15 @@ public class VendorApplicationActivity extends AppCompatActivity {
             selectedProducts.add("Bean");
         }
 
-        // Save each selected product to the database
-        for (String productName : selectedProducts) {
-            databaseHelper.addVendorApplication(userId, productName);
+        // Check if any products are selected
+        if (selectedProducts.isEmpty()) {
+            Toast.makeText(this, "Please select at least one product.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        // Join the selected products into a single string
+        String status = "PENDING";
+        databaseHelper.addVendorApplication(userId, selectedProducts, status);
 
         Toast.makeText(this, "Products saved successfully!", Toast.LENGTH_SHORT).show();
     }

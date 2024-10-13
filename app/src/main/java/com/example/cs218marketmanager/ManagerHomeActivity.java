@@ -36,7 +36,7 @@ public class ManagerHomeActivity extends AppCompatActivity {
                     // Do nothing, as we are already in HomeFragment
                     return true;
                 } else if (item.getItemId() == R.id.manager_application) {
-                    Intent intent = new Intent(ManagerHomeActivity.this, VendorProfileActivity.class);
+                    Intent intent = new Intent(ManagerHomeActivity.this, VendorApprovalActivity.class);
                     startActivity(intent);
                     return true;
                 } else if (item.getItemId() == R.id.manager_payment) {
