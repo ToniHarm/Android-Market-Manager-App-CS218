@@ -35,6 +35,24 @@
                 android:layout_height="100dp"
                 android:layout_marginBottom="20dp"
                 android:src="@drawable/profile_avatar" />
+            <Button
+                android:id="@+id/takePhotoButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Take Photo"
+                android:backgroundTint="@color/limeGreen"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/editButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="@color/limeGreen"
+                android:text="Edit Profile"
+                android:textColor="@color/white" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
@@ -101,12 +119,12 @@
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/textViewProduct"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checked="true"
-                            android:text="ProductfromDb" />
+                    <TextView
+                        android:id="@+id/textViewProduct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="ProductfromDb" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -137,21 +155,22 @@
                     android:textStyle="bold" />
 
                 <ImageView
+                    android:id="@+id/imageViewProductPhoto"
                     android:layout_width="wrap_content"
                     android:layout_height="133dp"
                     android:layout_margin="0dp"
                     android:src="@drawable/vegetable_market" />
+
+                <Button
+                    android:id="@+id/takePhotoButton2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="@color/limeGreen"
+                    android:text="@string/take_photo"
+                    android:textColor="@color/white" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-        <Button
-            android:id="@+id/editButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:backgroundTint="@color/limeGreen"
-            android:text="Edit Profile"
-            android:layout_marginEnd="5dp"
-            android:textColor="@color/white" />
 
         </LinearLayout>
     </ScrollView>
