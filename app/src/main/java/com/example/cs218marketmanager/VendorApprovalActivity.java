@@ -28,13 +28,13 @@ public class VendorApprovalActivity extends AppCompatActivity {
         adapter = new VendorApplicationAdapter(applicationsList, this);
         recyclerView.setAdapter(adapter);
 
-        loadVendorApplications();
+        loadVendorApplication();
     }
 
-    private void loadVendorApplications() {
+    private void loadVendorApplication() {
         // Add logic here to fetch data from the database
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
-        List<VendorApplication> applications = databaseHelper.getAllVendorApplications();
+        List<VendorApplication> applications = databaseHelper.getAllVendorApplication();
         adapter.updateApplications(applications);
     }
 }

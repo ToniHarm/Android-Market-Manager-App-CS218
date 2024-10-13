@@ -38,7 +38,7 @@ public class VendorProfileActivity extends AppCompatActivity {
 
         //Initialize Views
         profileImageView = findViewById(R.id.profilePicture);
-        profileDetailsTextView = findViewById(R.id.profileDetailsTextView);
+
         textViewStallNumber = findViewById(R.id.textViewStallNumber);
         textViewProduct = findViewById(R.id.textViewProduct);
         editButton = findViewById(R.id.editButton);

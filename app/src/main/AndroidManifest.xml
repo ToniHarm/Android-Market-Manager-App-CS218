@@ -21,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterVendorActivity" />
         <activity android:name=".RegisterManagerActivity" />
@@ -30,6 +31,7 @@
         <activity android:name=".VendorApplicationActivity" />
         <activity android:name=".VendorProfileActivity" />
         <activity android:name=".VendorApprovalActivity" />
+        <activity android:name=".ViewVendorAccountsActivity"/>
 
     </application>
 

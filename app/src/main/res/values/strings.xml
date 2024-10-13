@@ -12,5 +12,7 @@
     <string name="registration">Registration</string>
     <string name="payment">Payment</string>
     <string name="vendor">Vendors</string>
+    <string name="vendors">vendors</string>
+    <string name="vendor_username">Vendor Username</string>
 
 </resources>

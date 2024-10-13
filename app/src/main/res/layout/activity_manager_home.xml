@@ -60,33 +60,18 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                <!-- Vendor First Name -->
-                <TextView
-                    android:id="@+id/textViewFirstName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sara James"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-                <!-- Manager Date of Birth -->
-                <TextView
-                    android:id="@+id/textViewDob"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Date of Birth: 01-01-1980"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    <!-- Vendor First Name -->
+                    <!-- Manager Date of Birth -->
+                    <TextView
+                        android:id="@+id/textViewFirstName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
 
-                <!-- Manager Phone Number -->
-                <TextView
-                    android:id="@+id/textViewPhoneNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    android:text="Phone Number: +679 9965432"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
-            </LinearLayout>
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
