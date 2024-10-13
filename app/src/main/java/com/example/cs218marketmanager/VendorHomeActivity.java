@@ -21,6 +21,8 @@ import com.example.cs218marketmanager.data.DatabaseHelper;
 import com.example.cs218marketmanager.util.PreferencesHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
+
 public class VendorHomeActivity extends AppCompatActivity {
     private TextView textViewStatus, textStallnumber;
     private Button vendorAppButton, saveButton;
@@ -67,6 +69,7 @@ public class VendorHomeActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
 
         // Application button to launch the VendorApplicationActivity for Refreshing
         vendorAppButton.setOnClickListener(new View.OnClickListener() {
@@ -120,20 +123,38 @@ public class VendorHomeActivity extends AppCompatActivity {
             }
         });
 
-        // Set up stall selection logic (only one stall can be selected)
-        for (int i = 0; i < gridLayoutStalls.getChildCount(); i++) {
-            View view = gridLayoutStalls.getChildAt(i);
-            if (view instanceof CheckBox) {
-                CheckBox checkBox = (CheckBox) view;
-                checkBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (selectedStallCheckBox != null && selectedStallCheckBox != checkBox) {
-                            selectedStallCheckBox.setChecked(false); // Uncheck previous
-                        }
-                        selectedStallCheckBox = checkBox; // Mark current as selected
+        // Query the database for all taken stalls
+        List<String> takenStalls = databaseHelper.getTakenStalls();
+
+        // Check if all stalls are taken
+        if (takenStalls.size() == gridLayoutStalls.getChildCount()) {
+            // If all stalls are taken, show a message and hide the grid layout
+            textViewStatus.setText("All stalls are occupied.");
+            gridLayoutStalls.setVisibility(View.GONE);
+            saveButton.setVisibility(View.GONE);
+        } else {
+            // Set up stall selection logic (only one stall can be selected)
+            for (int i = 0; i < gridLayoutStalls.getChildCount(); i++) {
+                View view = gridLayoutStalls.getChildAt(i);
+                if (view instanceof CheckBox) {
+                    CheckBox checkBox = (CheckBox) view;
+                    String stallNumber = checkBox.getText().toString();
+
+                    // Hide the checkbox if the stall is already taken
+                    if (takenStalls.contains(stallNumber)) {
+                        checkBox.setVisibility(View.GONE);
                     }
-                });
+
+                    checkBox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (selectedStallCheckBox != null && selectedStallCheckBox != checkBox) {
+                                selectedStallCheckBox.setChecked(false);  // Uncheck the previous stall
+                            }
+                            selectedStallCheckBox = checkBox;  // Mark current as selected
+                        }
+                    });
+                }
             }
         }
 

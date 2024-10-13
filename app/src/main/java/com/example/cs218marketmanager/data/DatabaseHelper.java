@@ -197,6 +197,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1; // Return true if the update was successful
     }
 
+
+    public List<String> getTakenStalls() {
+        List<String> takenStalls = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT " + COLUMN_STALL_NUMBER + " FROM " + TABLE_VENDOR + " WHERE stallNumber IS NOT NULL";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String stallNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STALL_NUMBER));
+                takenStalls.add(stallNumber);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return takenStalls;
+    }
+
+
+
     public Vendor getVendorDetails(Long userId) {
         Vendor vendor = null;
         SQLiteDatabase db = this.getReadableDatabase();
