@@ -19,7 +19,7 @@ import com.example.cs218marketmanager.util.PreferencesHelper;
 public class VendorProfileActivity extends AppCompatActivity {
 
     private ImageView profileImageView;
-    private TextView profileDetailsTextView,textViewStallNumber;
+    private TextView profileDetailsTextView,textViewStallNumber, textViewProduct;
     private Button editButton;
     private DatabaseHelper databaseHelper;
     private PreferencesHelper preferencesHelper;
@@ -40,6 +40,7 @@ public class VendorProfileActivity extends AppCompatActivity {
         profileImageView = findViewById(R.id.profilePicture);
         profileDetailsTextView = findViewById(R.id.profileDetailsTextView);
         textViewStallNumber = findViewById(R.id.textViewStallNumber);
+        textViewProduct = findViewById(R.id.textViewProduct);
         editButton = findViewById(R.id.editButton);
 
         databaseHelper = new DatabaseHelper(this);
@@ -77,9 +78,15 @@ public class VendorProfileActivity extends AppCompatActivity {
 
         );
 
+//        textViewProduct.setText(
+//
+//        );
+
 //        textViewStallNumber.setText(
 //                "S"
 //        );
+
+
 
     }
 }

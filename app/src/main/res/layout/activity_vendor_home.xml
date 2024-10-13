@@ -81,7 +81,7 @@
                     android:id="@+id/textViewStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Status: Accepted"
+                    android:text="Status: Pending"
                     android:textColor="@color/darkGreen"
                     android:layout_marginBottom="5dp"
                     android:textSize="16sp"
@@ -95,73 +95,56 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
                 <GridLayout
+                    android:id="@+id/gridLayoutStalls"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:columnCount="5"
                     android:orientation="horizontal"
                     android:layout_marginTop="10dp"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"> <!-- Hide by default -->
+
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1"
-                        android:checked="false"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="1" />
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="2"
-                        android:checked="false"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="2" />
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3"
-                        android:checked="false"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="3" />
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="4"
-                        android:checked="false"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="4" />
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="5"
-                        android:checked="true"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="5" />
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="6"
-                        android:checked="false"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="6" />
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="7"
-                        android:checked="false"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="7" />
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="8"
-                        android:checked="false"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="8" />
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="9"
-                        android:checked="false"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="9" />
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="10"
-                        android:checked="false"
-                        android:layout_marginEnd="5dp"/>
+                        android:text="10" />
                 </GridLayout>
                 <Button
                     android:id="@+id/saveButton"

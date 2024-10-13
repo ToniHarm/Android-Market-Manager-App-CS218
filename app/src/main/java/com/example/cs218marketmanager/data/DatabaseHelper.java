@@ -6,18 +6,23 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.example.cs218marketmanager.data.model.User;
+import com.example.cs218marketmanager.data.model.VendorApplication;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "marketmanager.db";
     private static final int DATABASE_VERSION = 2;
     //Tables
     private static final String TABLE_USER = "users";
-    private static final String TABLE_APPLICATION = "vendorApplication";
+    private static final String TABLE_VENDOR_APPLICATION = "vendorApplication";
 
     private static final String COLUMN_ID = "id";
 
@@ -32,9 +37,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_ROLE = "role";
 
     // Column names for APPLICATION table
-    public static final String TABLE_VENDOR_APPLICATION = "vendorApplication";
-    public static final String COLUMN_USER_ID = "user_id";
-    public static final String COLUMN_PRODUCT_NAME = "product_name";
+    private static final String COLUMN_USER_ID = "user_id";
+    private static final String COLUMN_PRODUCT_NAME = "product_name";
+    private static final String COLUMN_STATUS = "status";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -58,6 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_USER_ID + " INTEGER, " +
                 COLUMN_PRODUCT_NAME + " TEXT, " +
+                COLUMN_STATUS + " TEXT, " +
                 "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
         db.execSQL(CREATE_APPLICATION_TABLE);
 
@@ -111,12 +117,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
     }
 
-    public void addVendorApplication(long userId, String productName) {
+    public void addVendorApplication(long userId, List<String> productNames, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_ID, userId);
-        values.put(COLUMN_PRODUCT_NAME, productName);
+        String joinedProductNames = TextUtils.join(",", productNames); // Using TextUtils to join
+        values.put(COLUMN_PRODUCT_NAME, joinedProductNames);
+        values.put(COLUMN_STATUS, status);
 
         db.insert(TABLE_VENDOR_APPLICATION, null, values);
         db.close();
@@ -231,6 +239,77 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return products;
     }
+
+    public String getApplicationStatus(long userId) {
+        String status = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT " + COLUMN_STATUS + " FROM " + TABLE_VENDOR_APPLICATION +
+                " WHERE " + COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
+            }
+            cursor.close();
+        }
+
+        return status; // This will return null if no status is found
+    }
+
+
+    public List<VendorApplication> getAllVendorApplications() {
+        List<VendorApplication> vendorApplications = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_VENDOR_APPLICATION;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID));
+                long userId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_USER_ID));
+                String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
+
+                // Fetch the product names and split them into a list
+                String productNamesString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_NAME));
+                List<String> products = new ArrayList<>();
+                if (productNamesString != null && !productNamesString.isEmpty()) {
+                    String[] productArray = productNamesString.split(","); // Split by comma
+                    for (String product : productArray) {
+                        products.add(product.trim()); // Add trimmed product names to the list
+                    }
+                }
+
+                User user = getUserById(userId); // Fetch the User details
+                VendorApplication vendorApplication = new VendorApplication(id, userId, user, products, status);
+                vendorApplications.add(vendorApplication);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return vendorApplications;
+    }
+
+    public boolean updateApplicationStatus(long applicationId, String status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_STATUS, status);
+
+        // Update the row where the application ID matches
+        int result = db.update("vendorApplication", values, "id = ?", new String[]{String.valueOf(applicationId)});
+
+        // Return true if update was successful
+        return result > 0;
+    }
+
+
+
+
+
 
 
 

@@ -72,14 +72,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tomato"
-                android:checked="true"
+                android:checked="false"
                 android:layout_marginEnd="5dp"/>
             <CheckBox
                 android:id="@+id/checkbox_papayas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Papayas"
-                android:checked="true"
+                android:checked="false"
                 android:layout_marginEnd="5dp"/>
             <CheckBox
                 android:id="@+id/checkbox_mangoes"
@@ -93,21 +93,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pineapple"
-                android:checked="true"
+                android:checked="false"
                 android:layout_marginEnd="5dp"/>
             <CheckBox
                 android:id="@+id/checkbox_coconut"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Coconut"
-                android:checked="true"
+                android:checked="false"
                 android:layout_marginEnd="5dp"/>
             <CheckBox
                 android:id="@+id/checkbox_cabbage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cabbage"
-                android:checked="true"
+                android:checked="false"
                 android:layout_marginEnd="5dp"/>
             <CheckBox
                 android:id="@+id/checkbox_dalo"
@@ -121,28 +121,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Breadfruit"
-                android:checked="true"
+                android:checked="false"
                 android:layout_marginEnd="5dp"/>
             <CheckBox
                 android:id="@+id/checkbox_cassava"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cassava"
-                android:checked="true"
+                android:checked="false"
                 android:layout_marginEnd="5dp"/>
             <CheckBox
                 android:id="@+id/checkbox_lettuce"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lettuce"
-                android:checked="true"
+                android:checked="false"
                 android:layout_marginEnd="5dp"/>
             <CheckBox
                 android:id="@+id/checkbox_bean"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Bean"
-                android:checked="true"
+                android:checked="false"
                 android:layout_marginEnd="5dp"/>
         </GridLayout>
 
