@@ -72,8 +72,8 @@ public class VendorApplicationAdapter extends RecyclerView.Adapter<VendorApplica
             // Update the application status to 'Approved'
             application.setStatus("APPROVED");
 
-            // Update the database
-            updateApplicationStatus(application, "APPROVED");
+            // Save user details and product details, set stall number to null in the vendor table
+            saveApprovedVendor(application);
 
             // Notify the user (optional)
             notifyVendor(user, "Your application has been approved!");
@@ -126,7 +126,26 @@ public class VendorApplicationAdapter extends RecyclerView.Adapter<VendorApplica
         Toast.makeText(context, user.getUsername() + ": " + message, Toast.LENGTH_SHORT).show();
     }
 
+    private void saveApprovedVendor(VendorApplication application) {
+        // Get the database helper
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
 
+        // Save user details and product details in the vendor table
+        User user = application.getUser();
+        boolean isSaved = databaseHelper.saveVendorDetails(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), application.getProducts());
+
+        // Set stall number to null
+        boolean isStallNullified = databaseHelper.setStallNumberToNull(user.getId());
+
+        if (isSaved && isStallNullified) {
+            Toast.makeText(context, "Vendor details saved successfully!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Failed to save vendor details.", Toast.LENGTH_SHORT).show();
+        }
+
+        // Update the application status to 'APPROVED'
+        updateApplicationStatus(application, "APPROVED");
+    }
 
 
 }

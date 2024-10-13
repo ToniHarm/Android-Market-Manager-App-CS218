@@ -13,15 +13,18 @@ import android.widget.Toast;
 
 import com.example.cs218marketmanager.data.model.User;
 import com.example.cs218marketmanager.data.model.VendorApplication;
+import com.example.cs218marketmanager.data.model.Vendor;
+
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "marketmanager.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     //Tables
     private static final String TABLE_USER = "users";
     private static final String TABLE_VENDOR_APPLICATION = "vendorApplication";
@@ -43,39 +46,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_PRODUCT_NAME = "product_name";
     private static final String COLUMN_STATUS = "status";
 
+    // VENDOR table
+    private static final String TABLE_VENDOR = "vendors";
+    private static final String COLUMN_STALL_NUMBER = "stallNumber";
+    private static final String COLUMN_RENT = "rent";
+    private static final String COLUMN_PRODUCT_PIC = "productPic";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-
-    // Method to get Manager details by ID (returns name and email)
-    public String[] getManagerDetailsById(Long id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // Assuming manager details are stored in the 'users' table with role as 'MANAGER'
-        Cursor cursor = db.query(TABLE_USER,
-                new String[]{COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_EMAIL},
-                COLUMN_ID + "=? AND " + COLUMN_ROLE + "=?",
-                new String[]{String.valueOf(id), "MANAGER"},
-                null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
-            String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
-            String email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL));
-            cursor.close();
-
-            // Return full name (first + last) and email
-            return new String[]{firstName + " " + lastName, email};
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        return null; // Return null if no details are found
-    }
-
-
 
 
     @Override
@@ -100,13 +79,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
         db.execSQL(CREATE_APPLICATION_TABLE);
 
+        // Create VENDOR table
+        String CREATE_VENDOR_TABLE = "CREATE TABLE " + TABLE_VENDOR + " ("
+                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COLUMN_USER_ID + " INTEGER, "
+                + COLUMN_PRODUCT_NAME + " TEXT, "
+                + COLUMN_STALL_NUMBER + " TEXT, "
+                + COLUMN_RENT + " TEXT, "
+                + COLUMN_PRODUCT_PIC + " BLOB,"
+                + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
+        db.execSQL(CREATE_VENDOR_TABLE);
+
         addDefaultAdminUserIfNotExists(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 2) {
-            addDefaultAdminUserIfNotExists(db);
+
+        // Create the VENDOR table if upgrading to version 3 (or later)
+        if (oldVersion < 3) {
+            String CREATE_VENDOR_TABLE = "CREATE TABLE " + TABLE_VENDOR + " ("
+                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_USER_ID + " INTEGER, "
+                    + COLUMN_PRODUCT_NAME + " TEXT, "
+                    + COLUMN_STALL_NUMBER + " TEXT, "
+                    + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
+            db.execSQL(CREATE_VENDOR_TABLE);
         }
     }
     public long addUser(User user) {
@@ -162,6 +160,77 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_VENDOR_APPLICATION, null, values);
         db.close();
     }
+
+    // Method to save vendor details into the vendor table
+    public boolean saveVendorDetails(Long userId, String firstName, String lastName, String email, List<String> products) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_ID, userId);
+        String joinedProductNames = TextUtils.join(",", products);
+        values.put(COLUMN_PRODUCT_NAME, joinedProductNames);
+
+        long result = db.insert(TABLE_VENDOR, null, values);
+        db.close();
+        return result != -1;
+    }
+
+    // Method to set the stall number to null in the vendor table
+    public boolean setStallNumberToNull(Long userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_STALL_NUMBER, (String) null); // Setting stall number to null
+
+        long result = db.update(TABLE_VENDOR, values, "user_id = ?", new String[]{String.valueOf(userId)});
+        db.close();
+        return result != -1;
+    }
+
+    // Method to update the stall number and fixed rent for a vendor
+    public boolean updateVendorStall(Long userId, String stallNumber) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_STALL_NUMBER, stallNumber);
+        values.put(COLUMN_RENT, 100);
+
+        long result = db.update(TABLE_VENDOR, values, "user_id = ?", new String[]{String.valueOf(userId)});
+        db.close();
+        return result != -1; // Return true if the update was successful
+    }
+
+    public Vendor getVendorDetails(Long userId) {
+        Vendor vendor = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT " + COLUMN_STALL_NUMBER + ", " + COLUMN_PRODUCT_NAME + " FROM " + TABLE_VENDOR + " WHERE user_id = ?";
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            vendor = new Vendor();
+
+            int stallNumberIndex = cursor.getColumnIndex(COLUMN_STALL_NUMBER);
+            int productsIndex = cursor.getColumnIndex(COLUMN_PRODUCT_NAME);
+
+            if (stallNumberIndex != -1 && productsIndex != -1) {
+                vendor.setStallNumber(cursor.getString(stallNumberIndex));
+
+                // Retrieve products as a comma-separated string and split into a List
+                String productsString = cursor.getString(productsIndex);
+                List<String> productList = Arrays.asList(productsString.split(",")); // Split by comma
+                vendor.setProducts(productList);
+            } else {
+                Log.e("DatabaseQuery", "Invalid column index");
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        db.close();
+        return vendor;
+    }
+
+
 
     public User getUser(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -273,6 +342,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return products;
     }
 
+    // Method to get Manager details by ID (returns name and email)
+    public String[] getManagerDetailsById(Long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Assuming manager details are stored in the 'users' table with role as 'MANAGER'
+        Cursor cursor = db.query(TABLE_USER,
+                new String[]{COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_EMAIL},
+                COLUMN_ID + "=? AND " + COLUMN_ROLE + "=?",
+                new String[]{String.valueOf(id), "MANAGER"},
+                null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+            String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+            String email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL));
+            cursor.close();
+
+            // Return full name (first + last) and email
+            return new String[]{firstName + " " + lastName, email};
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return null; // Return null if no details are found
+    }
+
+
     public String getApplicationStatus(long userId) {
         String status = null;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -292,8 +390,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<VendorApplication> getAllVendorApplications() {
-        List<VendorApplication> vendorApplications = new ArrayList<>();
+    public List<VendorApplication> getAllVendorApplication() {
+        List<VendorApplication> vendorApplication = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT * FROM " + TABLE_VENDOR_APPLICATION;
@@ -325,9 +423,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return vendorApplication;
     }
-
-
-
 
 
     public List<VendorApplication> getApprovedVendorApplications() {

@@ -34,7 +34,7 @@ public class VendorApprovalActivity extends AppCompatActivity {
     private void loadVendorApplications() {
         // Add logic here to fetch data from the database
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
-        List<VendorApplication> applications = databaseHelper.getAllVendorApplications();
+        List<VendorApplication> applications = databaseHelper.getAllVendorApplication();
         adapter.updateApplications(applications);
     }
 }

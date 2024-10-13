@@ -54,6 +54,8 @@ public class VendorApplicationActivity extends AppCompatActivity {
                 saveSelectedProducts();
             }
         });
+
+
     }
 
     private void saveSelectedProducts() {

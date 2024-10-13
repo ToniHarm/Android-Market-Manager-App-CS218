@@ -90,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:text="Stall Number from db"
+                    android:text="Stall Number"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
             </androidx.cardview.widget.CardView>

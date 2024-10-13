@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,10 +22,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.cs218marketmanager.data.DatabaseHelper;
 import com.example.cs218marketmanager.data.model.User;
 import com.example.cs218marketmanager.util.PreferencesHelper;
+import com.example.cs218marketmanager.data.model.Vendor;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class VendorProfileActivity extends AppCompatActivity {
 
@@ -69,6 +73,7 @@ public class VendorProfileActivity extends AppCompatActivity {
             User user = databaseHelper.getUserById(userId);
             if (user != null) {
                 displayUserDetails(user);
+                displayVendorDetails(userId);
             } else {
                 Toast.makeText(this, "User not found!", Toast.LENGTH_SHORT).show();
             }
@@ -183,4 +188,24 @@ public class VendorProfileActivity extends AppCompatActivity {
                         "Last Name: " + user.getLastName() + "\n"
         );
     }
+    private void displayVendorDetails(Long userId) {
+        Vendor vendor = databaseHelper.getVendorDetails(userId); // Retrieve vendor details
+        if (vendor != null) {
+            textViewStallNumber.setText("Stall Number: " + vendor.getStallNumber());
+
+            // If products is a list, convert it to a comma-separated string
+            List<String> productsList = vendor.getProducts();  // Assuming getProducts() returns a List<String>
+            if (productsList != null && !productsList.isEmpty()) {
+                // Join the list elements into a single string without brackets
+                String productsString = TextUtils.join(", ", productsList);  // e.g., "Product1, Product2, Product3"
+                textViewProduct.setText(productsString);
+            } else {
+                textViewProduct.setText("No products available");
+            }
+        } else {
+            Log.e("VendorProfile", "Vendor details not found for user ID: " + userId);
+        }
+    }
+
+
 }
