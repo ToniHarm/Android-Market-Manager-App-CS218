@@ -1,12 +1,14 @@
 package com.example.cs218marketmanager.data;
 import static android.app.DownloadManager.COLUMN_ID;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cs218marketmanager.data.model.User;
@@ -44,6 +46,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
+    // Method to get Manager details by ID (returns name and email)
+    public String[] getManagerDetailsById(Long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Assuming manager details are stored in the 'users' table with role as 'MANAGER'
+        Cursor cursor = db.query(TABLE_USER,
+                new String[]{COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_EMAIL},
+                COLUMN_ID + "=? AND " + COLUMN_ROLE + "=?",
+                new String[]{String.valueOf(id), "MANAGER"},
+                null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+            String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+            String email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL));
+            cursor.close();
+
+            // Return full name (first + last) and email
+            return new String[]{firstName + " " + lastName, email};
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return null; // Return null if no details are found
+    }
+
+
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -124,7 +157,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_USER_ID, userId);
         String joinedProductNames = TextUtils.join(",", productNames); // Using TextUtils to join
         values.put(COLUMN_PRODUCT_NAME, joinedProductNames);
-        values.put(COLUMN_STATUS, status);
+        values.put(COLUMN_STATUS, status); // Ensure status is correct
 
         db.insert(TABLE_VENDOR_APPLICATION, null, values);
         db.close();
@@ -180,7 +213,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         }
     }
-    private String getColumnValue(Cursor cursor, String columnName) {
+    private static String getColumnValue(Cursor cursor, String columnName) {
         int index = cursor.getColumnIndex(columnName);
         if (index != -1) {
             return cursor.getString(index);
@@ -283,9 +316,64 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
 
                 User user = getUserById(userId); // Fetch the User details
+                VendorApplication vendorApplications = new VendorApplication(id, userId, user, products, status);
+                vendorApplication.add(vendorApplications);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return vendorApplication;
+    }
+
+
+
+
+
+    public List<VendorApplication> getApprovedVendorApplications() {
+        List<VendorApplication> vendorApplications = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Query for vendor applications with "approved" status
+        String selectQuery = "SELECT * FROM " + TABLE_VENDOR_APPLICATION + " WHERE " + COLUMN_STATUS + " = ?";
+        Log.d("VendorApp", "Executing query: " + selectQuery); // Log the query
+
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{"approved"});
+
+        // Check if the cursor has data
+        Log.d("VendorApp", "Number of rows in cursor: " + cursor.getCount());
+
+        if (cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID));
+                long userId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_USER_ID));
+                String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
+
+                Log.d("VendorApp", "Application ID: " + id + ", User ID: " + userId + ", Status: " + status);
+
+                // Fetch the product names and split them into a list
+                String productNamesString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_NAME));
+                Log.d("VendorApp", "Product names: " + productNamesString);
+                List<String> products = new ArrayList<>();
+                if (productNamesString != null && !productNamesString.isEmpty()) {
+                    String[] productArray = productNamesString.split(","); // Split by comma
+                    for (String product : productArray) {
+                        products.add(product.trim()); // Add trimmed product names to the list
+                    }
+                }
+
+                User user = getUserById(userId); // Fetch the User details
+                if (user != null) {
+                    Log.d("VendorApp", "User found: " + user.getUsername() + " (" + user.getEmail() + ")");
+                } else {
+                    Log.e("VendorApp", "User with ID " + userId + " not found.");
+                }
+
                 VendorApplication vendorApplication = new VendorApplication(id, userId, user, products, status);
                 vendorApplications.add(vendorApplication);
             } while (cursor.moveToNext());
+        } else {
+            Log.e("VendorApp", "No approved vendor applications found.");
         }
 
         cursor.close();
@@ -293,24 +381,101 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return vendorApplications;
     }
 
+    public List<User> getManagers() {
+        List<User> managers = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Query for users with the role of "MANAGER"
+        Cursor cursor = db.query(TABLE_USER,
+                new String[]{COLUMN_ID, COLUMN_USERNAME, COLUMN_EMAIL, COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_PROFILE_PIC, COLUMN_PASSWORD, COLUMN_ROLE},
+                COLUMN_ROLE + "=?",
+                new String[]{"MANAGER"},
+                null, null, null);
+
+        // Loop through the results and add each manager to the list
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Long id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID));
+                String username = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
+                String email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL));
+                String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+                String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+                byte[] profilePic = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_PROFILE_PIC));
+                String password = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
+                User.Role role = User.Role.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE)));
+
+                User user = new User(id, username, email, firstName, lastName, profilePic, role);
+                user.setPassword(password); // Set the password if needed
+                managers.add(user);
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+
+        return managers; // Return the list of managers
+    }
+
+//    public boolean deleteManagerByEmail(String email) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        boolean isDeleted = false;  // Track whether the deletion was successful
+//
+//        // Use a try-catch block to handle potential exceptions
+//        try {
+//            // Delete the manager where the email matches
+//            int rowsAffected = db.delete("ManagerTable", "email=?", new String[]{email});
+//
+//            // Check if any rows were affected
+//            isDeleted = rowsAffected > 0;
+//
+//            // Log the result
+//            Log.d("DatabaseHelper", "Delete operation successful: " + isDeleted + " for email: " + email);
+//        } catch (Exception e) {
+//            // Log the exception
+//            Log.e("DatabaseHelper", "Error deleting manager by email: " + email, e);
+//        } finally {
+//            // Close the database if necessary
+//            db.close();
+//        }
+//
+//        return isDeleted;
+//    }
+
+
+    // Method to delete a manager by email
+    public boolean deleteManagerById(String email) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Log the email we are trying to delete
+        Log.d("DatabaseHelper", "Attempting to delete manager with email: " + email);
+
+        // Execute the delete query: only delete users where the role is MANAGER and the email matches
+        int rowsAffected = db.delete("users", "email = ? AND role = ?", new String[]{email, "MANAGER"});
+
+        db.close(); // Always close the database connection
+
+        // Log the result
+        if (rowsAffected > 0) {
+            Log.d("DatabaseHelper", "Manager deleted successfully.");
+            return true; // Return true if at least one row was deleted
+        } else {
+            Log.d("DatabaseHelper", "No manager found with the email: " + email);
+            return false; // Return false if no rows were affected (i.e., no manager was found)
+        }
+    }
+
+
     public boolean updateApplicationStatus(long applicationId, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(COLUMN_STATUS, status);
 
-        // Update the row where the application ID matches
-        int result = db.update("vendorApplication", values, "id = ?", new String[]{String.valueOf(applicationId)});
+        int result = db.update(TABLE_VENDOR_APPLICATION, values, COLUMN_ID + " = ?", new String[]{String.valueOf(applicationId)});
 
-        // Return true if update was successful
-        return result > 0;
+        return result > 0; // Return true if update was successful
     }
-
-
-
-
-
-
-
 
 }
