@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
@@ -19,76 +20,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="24dp" />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewManagers"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_margin="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
         app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        app:layout_constraintBottom_toTopOf="@id/admin_nav_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/textViewManagerName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="John Doe"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/textViewPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="+679 9324373"
-                android:textColor="@color/darkGreen"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/textViewDob"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="01-06-1996"
-                android:textColor="@color/darkGreen"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/textViewEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="jdoe@gmail.com"
-                android:textColor="@color/darkGreen"
-                android:textSize="14sp" />
-
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="3"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
-
-                <Button
-                    android:id="@+id/buttonDeregister"
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:layout_row="0"
-                    android:layout_column="2"
-                    android:layout_columnWeight="1"
-                    android:backgroundTint="@color/limeGreen"
-                    android:text="De-register"
-                    android:textColor="@color/white" />
-            </GridLayout>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/admin_nav_view"

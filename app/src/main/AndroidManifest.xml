@@ -33,6 +33,7 @@
         <activity android:name=".VendorApprovalActivity" />
         <activity android:name=".ViewVendorAccountsActivity"/>
 
+
     </application>
 
 

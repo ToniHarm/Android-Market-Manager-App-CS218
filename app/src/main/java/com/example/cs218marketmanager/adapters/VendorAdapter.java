@@ -1,4 +1,4 @@
-package com.example.cs218marketmanager;
+package com.example.cs218marketmanager.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cs218marketmanager.R;
 import com.example.cs218marketmanager.data.model.User;
 
 import java.util.List;
@@ -49,3 +50,4 @@ public class VendorAdapter extends RecyclerView.Adapter<VendorAdapter.VendorView
         }
     }
 }
+//not done will finish when full vendor process finished

@@ -1,6 +1,7 @@
 package com.example.cs218marketmanager.data;
 import static android.app.DownloadManager.COLUMN_ID;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -212,7 +213,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         }
     }
-    private String getColumnValue(Cursor cursor, String columnName) {
+    private static String getColumnValue(Cursor cursor, String columnName) {
         int index = cursor.getColumnIndex(columnName);
         if (index != -1) {
             return cursor.getString(index);
@@ -327,6 +328,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
+
+
     public List<VendorApplication> getApprovedVendorApplications() {
         List<VendorApplication> vendorApplications = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -376,6 +379,91 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return vendorApplications;
+    }
+
+    public List<User> getManagers() {
+        List<User> managers = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Query for users with the role of "MANAGER"
+        Cursor cursor = db.query(TABLE_USER,
+                new String[]{COLUMN_ID, COLUMN_USERNAME, COLUMN_EMAIL, COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_PROFILE_PIC, COLUMN_PASSWORD, COLUMN_ROLE},
+                COLUMN_ROLE + "=?",
+                new String[]{"MANAGER"},
+                null, null, null);
+
+        // Loop through the results and add each manager to the list
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Long id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID));
+                String username = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
+                String email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL));
+                String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+                String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+                byte[] profilePic = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_PROFILE_PIC));
+                String password = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
+                User.Role role = User.Role.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE)));
+
+                User user = new User(id, username, email, firstName, lastName, profilePic, role);
+                user.setPassword(password); // Set the password if needed
+                managers.add(user);
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+
+        return managers; // Return the list of managers
+    }
+
+//    public boolean deleteManagerByEmail(String email) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        boolean isDeleted = false;  // Track whether the deletion was successful
+//
+//        // Use a try-catch block to handle potential exceptions
+//        try {
+//            // Delete the manager where the email matches
+//            int rowsAffected = db.delete("ManagerTable", "email=?", new String[]{email});
+//
+//            // Check if any rows were affected
+//            isDeleted = rowsAffected > 0;
+//
+//            // Log the result
+//            Log.d("DatabaseHelper", "Delete operation successful: " + isDeleted + " for email: " + email);
+//        } catch (Exception e) {
+//            // Log the exception
+//            Log.e("DatabaseHelper", "Error deleting manager by email: " + email, e);
+//        } finally {
+//            // Close the database if necessary
+//            db.close();
+//        }
+//
+//        return isDeleted;
+//    }
+
+
+    // Method to delete a manager by email
+    public boolean deleteManagerById(String email) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Log the email we are trying to delete
+        Log.d("DatabaseHelper", "Attempting to delete manager with email: " + email);
+
+        // Execute the delete query: only delete users where the role is MANAGER and the email matches
+        int rowsAffected = db.delete("users", "email = ? AND role = ?", new String[]{email, "MANAGER"});
+
+        db.close(); // Always close the database connection
+
+        // Log the result
+        if (rowsAffected > 0) {
+            Log.d("DatabaseHelper", "Manager deleted successfully.");
+            return true; // Return true if at least one row was deleted
+        } else {
+            Log.d("DatabaseHelper", "No manager found with the email: " + email);
+            return false; // Return false if no rows were affected (i.e., no manager was found)
+        }
     }
 
 
