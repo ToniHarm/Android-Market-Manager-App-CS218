@@ -145,6 +145,15 @@ public class VendorHomeActivity extends AppCompatActivity {
                     String selectedStall = selectedStallCheckBox.getText().toString();
                     if (updateVendorStall(userId, selectedStall)) {
                         Toast.makeText(VendorHomeActivity.this, "Stall selected successfully!", Toast.LENGTH_SHORT).show();
+
+                        // Hide the grid layout and save button after stall selection
+                        gridLayoutStalls.setVisibility(View.GONE);
+                        saveButton.setVisibility(View.GONE);
+                        textStallnumber.setVisibility(View.GONE);
+
+                        // Update the application status to reflect the stall selection
+                        textViewStatus.setText("Stall " + selectedStall + " selected. Application approved.");
+
                     } else {
                         Toast.makeText(VendorHomeActivity.this, "Failed to update stall. Try again.", Toast.LENGTH_SHORT).show();
                     }
@@ -154,8 +163,7 @@ public class VendorHomeActivity extends AppCompatActivity {
             }
         });
 
-        // Refresh status
-        refreshApplicationStatus();
+
 
 
         //Bottom Navigation
@@ -176,7 +184,11 @@ public class VendorHomeActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 } else if (item.getItemId() == R.id.vendor_finance) {
-                    Intent intent = new Intent(VendorHomeActivity.this, FinanceFragment.class);
+                    Intent intent = new Intent(VendorHomeActivity.this, VendorFinanceActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getItemId() == R.id.vendor_setting) {
+                    Intent intent = new Intent(VendorHomeActivity.this, SettingsActivity.class);
                     startActivity(intent);
                     return true;
                 }
@@ -185,6 +197,7 @@ public class VendorHomeActivity extends AppCompatActivity {
             }
         });
 
+        refreshApplicationStatus();
 
     }
 

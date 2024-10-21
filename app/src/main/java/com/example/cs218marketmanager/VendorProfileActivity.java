@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import com.example.cs218marketmanager.data.DatabaseHelper;
 import com.example.cs218marketmanager.data.model.User;
 import com.example.cs218marketmanager.util.PreferencesHelper;
 import com.example.cs218marketmanager.data.model.Vendor;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,6 +39,7 @@ public class VendorProfileActivity extends AppCompatActivity {
     private ImageView profileImageView, productImageView;
     private TextView profileDetailsTextView, textViewStallNumber, textViewProduct;
     private Button takePhotoButton1, takePhotoButton2, editButton;
+    private BottomNavigationView bnv;
     private DatabaseHelper databaseHelper;
     private PreferencesHelper preferencesHelper;
 
@@ -93,6 +96,37 @@ public class VendorProfileActivity extends AppCompatActivity {
         takePhotoButton2.setOnClickListener(v -> {
             currentPhotoTarget = imageViewProductPhoto; // Mark as product image
             handleCameraPermission();
+        });
+
+        //Bottom Navigation
+        bnv = findViewById(R.id.nav_view);
+        bnv.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                // Using if-else for navigation
+                if (item.getItemId() == R.id.vendor_home) {
+                    Intent intent = new Intent(VendorProfileActivity.this, VendorHomeActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getItemId() == R.id.vendor_profile) {
+
+                    return true;
+                } else if (item.getItemId() == R.id.vendor_notification) {
+                    Intent intent = new Intent(VendorProfileActivity.this, NotificationActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getItemId() == R.id.vendor_finance) {
+                    Intent intent = new Intent(VendorProfileActivity.this, VendorFinanceActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getItemId() == R.id.vendor_setting) {
+                    Intent intent = new Intent(VendorProfileActivity.this, SettingsActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+
+                return false; // Default return false for unhandled cases
+            }
         });
     }
 
@@ -206,6 +240,7 @@ public class VendorProfileActivity extends AppCompatActivity {
             Log.e("VendorProfile", "Vendor details not found for user ID: " + userId);
         }
     }
+
 
 
 }

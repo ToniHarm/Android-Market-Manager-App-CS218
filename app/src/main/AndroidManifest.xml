@@ -45,6 +45,8 @@
         <activity android:name=".VendorProfileActivity" />
         <activity android:name=".VendorApprovalActivity" />
         <activity android:name=".ViewVendorAccountsActivity"/>
+        <activity android:name=".VendorFinanceActivity"/>
+        <activity android:name=".SettingsActivity"/>
 
 
     </application>

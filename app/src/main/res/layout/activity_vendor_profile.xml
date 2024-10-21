@@ -90,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:text="Stall Number"
+                    android:text="Stall not Assigned"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
             </androidx.cardview.widget.CardView>
@@ -124,7 +124,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="ProductfromDb" />
+                        android:text="No Products Available" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -174,4 +174,16 @@
 
         </LinearLayout>
     </ScrollView>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:backgroundTint="@color/mossGreen"
+        app:menu="@menu/vendor_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>

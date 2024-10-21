@@ -113,5 +113,9 @@ public class VendorApplicationActivity extends AppCompatActivity {
         databaseHelper.addVendorApplication(userId, selectedProducts, status);
 
         Toast.makeText(this, "Products saved successfully!", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(VendorApplicationActivity.this, VendorHomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
