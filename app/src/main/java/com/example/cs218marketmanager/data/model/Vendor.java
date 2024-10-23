@@ -10,12 +10,16 @@ public class Vendor {
     private String email; // Email of the user
     private List<String> products; // List of products offered by the vendor
     private String stallNumber; // Stall number
+    private double balance; // Total balance for the vendor
+    private double fine; // Total fines for the vendor
+    private double payment; // Total payments made by the vendor
+
 
     public Vendor() {
 
     }
     // Constructor
-    public Vendor(long id, long userId, String firstName, String lastName, String email, List<String> products, String stallNumber) {
+    public Vendor(long id, long userId, String firstName, String lastName, String email, List<String> products, String stallNumber,  double balance, double fine, double payment) {
         this.id = id;
         this.userId = userId;
         this.firstName = firstName;
@@ -23,6 +27,9 @@ public class Vendor {
         this.email = email;
         this.products = products;
         this.stallNumber = stallNumber;
+        this.balance = balance;
+        this.fine = fine;
+        this.payment = payment;
     }
 
     // Getters and Setters
@@ -80,5 +87,29 @@ public class Vendor {
 
     public void setStallNumber(String stallNumber) {
         this.stallNumber = stallNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public double getFine() {
+        return fine;
+    }
+
+    public void setFine(double fine) {
+        this.fine = fine;
+    }
+
+    public double getPayment() {
+        return payment;
+    }
+
+    public void setPayment(double payment) {
+        this.payment = payment;
     }
 }

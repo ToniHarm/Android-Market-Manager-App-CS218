@@ -6,54 +6,31 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SplashActivity"
-    tools:ignore="ExtraText">
+    android:background="@color/deepGreen"
+    tools:context=".SplashActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="25dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.427">>
+<LinearLayout
+android:id="@+id/linearLayout2"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:gravity="center"
+android:orientation="vertical"
+android:padding="25dp"
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toTopOf="parent"
+android:backgroundTint="@color/deepGreen">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottieAnimationView"
-            android:layout_width="wrap_content"
-            android:layout_height="239dp"
-            android:layout_centerInParent="true"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            app:lottie_rawRes="@raw/splash_animation" />
-
-        <TextView
-            android:id="@+id/animatedTextView"
-            android:layout_width="338dp"
-            android:layout_height="98dp"
-            android:alpha="0"
-            android:gravity="center"
-            android:text="@string/welcome_msg"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
-
-        <!-- Animated TextView Below LottieAnimationView -->
-        <!-- Initially invisible -->
+<com.airbnb.lottie.LottieAnimationView
+    android:id="@+id/lottieAnimationView"
+    android:layout_width="wrap_content"
+    android:layout_height="239dp"
+    app:lottie_autoPlay="true"
+    app:lottie_loop="true"
+    app:lottie_rawRes="@raw/vegetable" />
 
 
-    </LinearLayout>
+</LinearLayout>
 
-    <!-- Accessibility description -->
-
-        app:layout_constraintTop_toTopOf="parent" <!-- Top constraint -->
-        app:layout_constraintBottom_toBottomOf="parent" <!-- Bottom constraint -->
-        app:layout_constraintLeft_toLeftOf="parent" <!-- Left constraint -->
-        app:layout_constraintRight_toRightOf="parent"  <!-- Right constraint -->
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,7 +32,7 @@ public class VendorHomeActivity extends AppCompatActivity {
     private BottomNavigationView bnv;
     private CheckBox selectedStallCheckBox = null;
 
-    //For refreshing
+    // For refreshing
     private ActivityResultLauncher<Intent> vendorAppLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -51,9 +51,8 @@ public class VendorHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vendor_home);
 
-        //initialize attributes
+        // Initialize attributes
         databaseHelper = new DatabaseHelper(this);
-        preferencesHelper = new PreferencesHelper(this);
         preferencesHelper = new PreferencesHelper(this);
         Long userId = preferencesHelper.getUserId();
 
@@ -63,13 +62,12 @@ public class VendorHomeActivity extends AppCompatActivity {
         textStallnumber = findViewById(R.id.textStallnumber);
         saveButton = findViewById(R.id.saveButton);
 
-        //check if user is logged in
+        // Check if user is logged in
         if (userId == null || userId.toString().isEmpty()) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
         }
-
 
         // Application button to launch the VendorApplicationActivity for Refreshing
         vendorAppButton.setOnClickListener(new View.OnClickListener() {
@@ -81,39 +79,7 @@ public class VendorHomeActivity extends AppCompatActivity {
             }
         });
 
-        //Home Page Activity
-        if (userId != -1) {
-            String applicationStatus = databaseHelper.getApplicationStatus(userId);
-
-            if (applicationStatus != null && !applicationStatus.isEmpty()) {
-                // Display the application status in a TextView
-                textViewStatus.setText("Application Status: " + applicationStatus);
-
-                // Check if the application is APPROVED
-                if ("APPROVED".equalsIgnoreCase(applicationStatus)) {
-                    // If approved, show stall number and save button
-                    textStallnumber.setVisibility(View.VISIBLE);
-                    gridLayoutStalls.setVisibility(View.VISIBLE);
-                    saveButton.setVisibility(View.VISIBLE);
-                } else {
-                    // If not approved, hide stall number and save button
-                    textStallnumber.setVisibility(View.GONE);
-                    gridLayoutStalls.setVisibility(View.GONE);
-                    saveButton.setVisibility(View.GONE);
-                }
-            } else {
-                // No application found, ensure the stall and save button are hidden
-                textViewStatus.setText("No application found.");
-                textStallnumber.setVisibility(View.GONE);
-                gridLayoutStalls.setVisibility(View.GONE);
-                saveButton.setVisibility(View.GONE);
-            }
-        } else {
-            // Handle invalid user ID
-            Toast.makeText(this, "Invalid user ID!", Toast.LENGTH_SHORT).show();
-        }
-
-        //Start vendor application activity when application is submitted
+        // Start vendor application activity when application is submitted
         vendorAppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,10 +91,19 @@ public class VendorHomeActivity extends AppCompatActivity {
 
         // Query the database for all taken stalls
         List<String> takenStalls = databaseHelper.getTakenStalls();
+        String selectedStall = databaseHelper.getVendorStall(userId); // Get selected stall from the database
+
+        // If a stall is already selected, disable the checkbox selection
+        if (selectedStall != null && !selectedStall.isEmpty()) {
+            textViewStatus.setText("Stall " + selectedStall + " is already selected.");
+            gridLayoutStalls.setVisibility(View.GONE); // Hide grid layout
+            saveButton.setVisibility(View.GONE); // Hide save button
+            textStallnumber.setVisibility(View.GONE); // Hide stall number text
+            return; // Exit early since a stall is already selected
+        }
 
         // Check if all stalls are taken
         if (takenStalls.size() == gridLayoutStalls.getChildCount()) {
-            // If all stalls are taken, show a message and hide the grid layout
             textViewStatus.setText("All stalls are occupied.");
             gridLayoutStalls.setVisibility(View.GONE);
             saveButton.setVisibility(View.GONE);
@@ -158,7 +133,7 @@ public class VendorHomeActivity extends AppCompatActivity {
             }
         }
 
-        //Save selected stall
+        // Save selected stall
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,10 +159,7 @@ public class VendorHomeActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-        //Bottom Navigation
+        // Bottom Navigation
         bnv = findViewById(R.id.nav_view);
         bnv.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
@@ -219,15 +191,12 @@ public class VendorHomeActivity extends AppCompatActivity {
         });
 
         refreshApplicationStatus();
-
     }
 
     private boolean updateVendorStall(Long userId, String stallNumber) {
         // Call the method in DatabaseHelper to update the stall number
-        DatabaseHelper databaseHelper = new DatabaseHelper(this);
         return databaseHelper.updateVendorStall(userId, stallNumber);
     }
-
 
     // Refresh method to reload the application status
     private void refreshApplicationStatus() {

@@ -11,7 +11,7 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/splash_background"
+        android:icon="@drawable/marketmanagerlogo"
         android:label="@string/app_name"
         android:roundIcon="@drawable/marketmanagerlogo"
         android:supportsRtl="true"
@@ -43,10 +43,11 @@
         <activity android:name=".ManagerHomeActivity" />
         <activity android:name=".VendorApplicationActivity" />
         <activity android:name=".VendorProfileActivity" />
-        <activity android:name=".VendorApprovalActivity" />
+        <activity android:name=".ManagerApprovalActivity" />
         <activity android:name=".ViewVendorAccountsActivity"/>
         <activity android:name=".VendorFinanceActivity"/>
         <activity android:name=".SettingsActivity"/>
+        <activity android:name=".ManagerAddPayment"/>
 
 
     </application>

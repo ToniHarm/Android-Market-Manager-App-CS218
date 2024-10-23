@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,15 +17,18 @@ import com.example.cs218marketmanager.data.model.VendorApplication;
 import com.example.cs218marketmanager.data.model.Vendor;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "marketmanager.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 6;
     //Tables
     private static final String TABLE_USER = "users";
     private static final String TABLE_VENDOR_APPLICATION = "vendorApplication";
@@ -48,9 +52,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // VENDOR table
     private static final String TABLE_VENDOR = "vendors";
+    private static final String COLUMN_VENDOR_ID = "vendor_id";
     private static final String COLUMN_STALL_NUMBER = "stallNumber";
     private static final String COLUMN_RENT = "rent";
     private static final String COLUMN_PRODUCT_PIC = "productPic";
+    private static final String COLUMN_TOTAL_BALANCE = "balance";
+    private static final String COLUMN_TOTAL_FINES = "fine";
+    private static final String COLUMN_TOTAL_PAYMENT = "payment";
+
+    //PAYMENT table
+    private static final String TABLE_PAYMENT = "vendorPayments";
+    private static final String COLUMN_PAYMENT_DATE = "paymentDate";
+    private static final String COLUMN_AMOUNT = "amount";
+    private static final String COLUMN_DESCRIPTION = "description";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -87,8 +101,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_STALL_NUMBER + " TEXT, "
                 + COLUMN_RENT + " TEXT, "
                 + COLUMN_PRODUCT_PIC + " BLOB,"
+                + COLUMN_TOTAL_BALANCE + " REAL DEFAULT 0.0, "
+                + COLUMN_TOTAL_FINES + " REAL DEFAULT 0.0, "
+                + COLUMN_TOTAL_PAYMENT + " REAL DEFAULT 0.0, "
                 + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
         db.execSQL(CREATE_VENDOR_TABLE);
+
+        // Create PAYMENT table
+        String CREATE_PAYMENT_TABLE = "CREATE TABLE " + TABLE_PAYMENT + " ("
+                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COLUMN_VENDOR_ID + " INTEGER, "
+                + COLUMN_AMOUNT + " REAL NOT NULL, "
+                + COLUMN_PAYMENT_DATE + " TEXT NOT NULL, "
+                + COLUMN_DESCRIPTION + " TEXT, "
+                + "FOREIGN KEY(" + COLUMN_VENDOR_ID + ") REFERENCES " + TABLE_VENDOR + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
+        db.execSQL(CREATE_PAYMENT_TABLE);
 
         addDefaultAdminUserIfNotExists(db);
     }
@@ -96,16 +123,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        // Create the VENDOR table if upgrading to version 3 (or later)
-        if (oldVersion < 3) {
-            String CREATE_VENDOR_TABLE = "CREATE TABLE " + TABLE_VENDOR + " ("
-                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + COLUMN_USER_ID + " INTEGER, "
-                    + COLUMN_PRODUCT_NAME + " TEXT, "
-                    + COLUMN_STALL_NUMBER + " TEXT, "
-                    + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
-            db.execSQL(CREATE_VENDOR_TABLE);
-        }
     }
     public long addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -191,6 +208,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_STALL_NUMBER, stallNumber);
         values.put(COLUMN_RENT, 100);
+        values.put(COLUMN_TOTAL_BALANCE, 100);
 
         long result = db.update(TABLE_VENDOR, values, "user_id = ?", new String[]{String.valueOf(userId)});
         db.close();
@@ -217,6 +235,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return takenStalls;
     }
 
+    public String getVendorStall(Long userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String stallNumber = null;
+
+        // Query to get the stall number for the given user ID
+        Cursor cursor = db.query(TABLE_VENDOR,
+                new String[]{COLUMN_STALL_NUMBER}, // Columns to retrieve
+                COLUMN_USER_ID + "=?", // Selection
+                new String[]{String.valueOf(userId)}, // Selection args
+                null, null, null); // Group By, Having, Order By
+
+        // Check if a result was found
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                stallNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STALL_NUMBER));
+            }
+            cursor.close();
+        }
+
+        return stallNumber;
+    }
 
 
     public Vendor getVendorDetails(Long userId) {
@@ -251,7 +290,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return vendor;
     }
-
 
 
     public User getUser(String username) {
@@ -594,5 +632,172 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return result > 0; // Return true if update was successful
     }
+
+    public Vendor getVendorFinance(long userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Vendor vendor = null;
+
+        String selectQuery = "SELECT * FROM " + TABLE_VENDOR + " WHERE " + COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
+
+        if (cursor.moveToFirst()) {
+            vendor = new Vendor();
+            vendor.setId(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+            vendor.setUserId(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_USER_ID)));
+            vendor.setBalance(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_TOTAL_BALANCE)));
+            vendor.setPayment(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_TOTAL_PAYMENT)));
+            vendor.setFine(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_TOTAL_FINES)));
+            // Add any additional financial data you may have
+        }
+
+        cursor.close();
+        db.close();
+        return vendor;
+    }
+
+    public List<String> getAllStallNumbers() {
+        List<String> stallNumbers = new ArrayList<>();
+        // Query to get all stall numbers from Vendor table
+        String query = "SELECT stallNumber FROM vendors";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                stallNumbers.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return stallNumbers;
+    }
+
+    public long getVendorIdByStallNumber(String stallNumber) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id FROM vendors WHERE stallNumber = ?", new String[]{stallNumber});
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                long vendorId = cursor.getLong(0);
+                cursor.close();
+                return vendorId;
+            }
+            cursor.close();
+        }
+
+        return -1; // Return -1 if vendor not found
+    }
+
+    public boolean addPaymentForVendor(String stallNumber, double paymentAmount, String paymentDate, String description) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Start a transaction to ensure data integrity
+        db.beginTransaction();
+        try {
+            // Get vendor ID using stall number
+            long vendorId = getVendorIdByStallNumber(stallNumber);
+            if (vendorId == -1) {
+                return false; // Vendor not found
+            }
+
+            // Insert payment into Payments table
+            ContentValues paymentValues = new ContentValues();
+            paymentValues.put("vendor_id", vendorId); // Use vendorId here
+            paymentValues.put("amount", paymentAmount);
+            paymentValues.put("paymentDate", paymentDate);
+            paymentValues.put("description", description);
+
+            long paymentResult = db.insert("vendorPayments", null, paymentValues);
+
+            // Update total payments and balance due for the vendor
+            String updateQuery = "UPDATE vendors SET payment = payment + ?, balance = balance - ? WHERE id = ?";
+            SQLiteStatement statement = db.compileStatement(updateQuery);
+            statement.bindDouble(1, paymentAmount);
+            statement.bindDouble(2, paymentAmount);
+            statement.bindLong(3, vendorId);
+            statement.executeUpdateDelete();
+
+            db.setTransactionSuccessful();
+
+            // Check if payment was inserted successfully
+            return paymentResult != -1; // Returns true if payment was inserted
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Return false if an error occurs
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public boolean addFineForVendor(String stallNumber, double fineAmount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            // Get vendor ID using stall number
+            long vendorId = getVendorIdByStallNumber(stallNumber);
+            if (vendorId == -1) {
+                return false; // Vendor not found
+            }
+
+            // Get current balance from the vendors table
+            double currentBalance = getBalanceDueByStallNumber(stallNumber);
+
+            // Add fine amount to current balance
+            double newBalance = currentBalance + fineAmount;
+
+            // Update the balance in the vendors table
+            ContentValues balanceValues = new ContentValues();
+            balanceValues.put("balance", newBalance);
+
+            // Update the vendor's balance in the vendors table
+            int updateResult = db.update("vendors", balanceValues, "id = ?", new String[]{String.valueOf(vendorId)});
+
+            // Check if the balance update was successful
+            if (updateResult == -1) {
+                return false; // Update failed
+            }
+
+            // Insert fine into the vendors
+            ContentValues fineValues = new ContentValues();
+            fineValues.put("fine", fineAmount);
+            long fineResult = db.insert("vendors", null, fineValues);
+
+            // Commit the transaction
+            db.setTransactionSuccessful();
+
+            // Return true if everything was successful
+            return fineResult != -1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Return false if an error occurs
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+
+    private String getCurrentDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return sdf.format(new Date());
+    }
+
+    public double getBalanceDueByStallNumber(String stallNumber) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT balance FROM vendors WHERE stallNumber = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{stallNumber});
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                double balanceDue = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_TOTAL_BALANCE));
+                cursor.close();
+                return balanceDue;
+            }
+            cursor.close();
+        }
+        return 0; // Default value if no balance due found
+    }
+
+
+
+
 
 }

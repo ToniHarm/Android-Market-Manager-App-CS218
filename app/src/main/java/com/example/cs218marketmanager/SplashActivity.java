@@ -30,17 +30,14 @@ public class SplashActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Find the TextView that will be animated
-        TextView animatedTextView = findViewById(R.id.animatedTextView);
-
-        // Apply fade-in animation to the TextView with a delay
-        new Handler().postDelayed(() -> {
-            // Create fade-in animation for the text
-            AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
-            fadeIn.setDuration(1500); // Animation duration (1.5 seconds)
-            animatedTextView.startAnimation(fadeIn);
-            animatedTextView.setVisibility(View.VISIBLE); // Make text visible after animation
-        }, 2000); // Delay before starting animation (2 seconds)
+//        // Apply fade-in animation to the TextView with a delay
+//        new Handler().postDelayed(() -> {
+//            // Create fade-in animation for the text
+//            AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
+//            fadeIn.setDuration(1500); // Animation duration (1.5 seconds)
+//            animatedTextView.startAnimation(fadeIn);
+//            animatedTextView.setVisibility(View.VISIBLE); // Make text visible after animation
+//        }, 2000); // Delay before starting animation (2 seconds)
 
         // Set a delay before launching the MainActivity
         new Handler().postDelayed(() -> {

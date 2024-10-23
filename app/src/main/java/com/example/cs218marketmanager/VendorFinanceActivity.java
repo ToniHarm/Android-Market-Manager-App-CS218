@@ -3,6 +3,7 @@ package com.example.cs218marketmanager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cs218marketmanager.data.DatabaseHelper;
 import com.example.cs218marketmanager.data.model.User;
+import com.example.cs218marketmanager.data.model.Vendor;
 import com.example.cs218marketmanager.util.PreferencesHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -17,6 +19,11 @@ public class VendorFinanceActivity extends AppCompatActivity {
     private BottomNavigationView bnv;
     private DatabaseHelper databaseHelper;
     private PreferencesHelper preferencesHelper;
+
+    private TextView textViewMonthlyFee;
+    private TextView textViewBalanceDue;
+    private TextView textViewPaymentsMade;
+    private TextView textViewFines;
 
     protected void onCreate(Bundle savedInstanceState) {
         preferencesHelper = new PreferencesHelper(this);
@@ -32,12 +39,21 @@ public class VendorFinanceActivity extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         preferencesHelper = new PreferencesHelper(this);
 
+        textViewMonthlyFee = findViewById(R.id.textViewMonthlyFee);
+        textViewBalanceDue = findViewById(R.id.textViewBalanceDue);
+        textViewPaymentsMade = findViewById(R.id.textViewPayments);
+        textViewFines = findViewById(R.id.textViewFines);
+
         long userId = preferencesHelper.getUserId();
         if (userId != -1) {
-            User user = databaseHelper.getUserById(userId);
-            if (user != null) {
+            Vendor vendor = databaseHelper.getVendorFinance(userId);
+            if (vendor != null) {
+                // Update the TextViews with vendor financial data
+                textViewBalanceDue.setText("Balance Due: $" + vendor.getBalance());
+                textViewPaymentsMade.setText("Payments Made: $" + vendor.getPayment());
+                textViewFines.setText("Total Fines: $" + vendor.getFine());
             } else {
-                Toast.makeText(this, "User not found!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vendor not found!", Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(this, "Invalid user ID!", Toast.LENGTH_SHORT).show();
