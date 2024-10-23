@@ -34,19 +34,7 @@ public class VendorApplicationActivity extends AppCompatActivity {
             finish();
         }
 
-        breadcrumbText = findViewById(R.id.breadcrumbText);
         databaseHelper = new DatabaseHelper(this);
-
-        // Set click listener for breadcrumb navigation
-        breadcrumbText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(VendorApplicationActivity.this, VendorHomeActivity.class);
-                intent.putExtra("userId", userId);
-                startActivity(intent);
-            }
-        });
-
 
         findViewById(R.id.savePButton).setOnClickListener(new View.OnClickListener() {
             @Override

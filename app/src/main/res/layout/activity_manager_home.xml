@@ -19,11 +19,12 @@
             android:padding="16dp">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="329dp"
+                android:layout_height="229dp"
                 android:layout_gravity="center"
                 android:padding="10dp"
-                android:src="@drawable/marketmanagerhome" />
+                android:src="@drawable/manager_home"
+                android:background="@drawable/rounded_corners"/>
 
             <TextView
                 android:id="@+id/headingMarketManager"
@@ -60,33 +61,16 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                <!-- Vendor First Name -->
-                <TextView
-                    android:id="@+id/textViewFirstName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sara James"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-                <!-- Manager Date of Birth -->
-                <TextView
-                    android:id="@+id/textViewDob"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Date of Birth: 01-01-1980"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/profileDetailsTextView"
+                        android:layout_width="293dp"
+                        android:layout_height="152dp"
+                        android:layout_gravity="center"
+                        android:text="User Profile Details from db"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
 
-                <!-- Manager Phone Number -->
-                <TextView
-                    android:id="@+id/textViewPhoneNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    android:text="Phone Number: +679 9965432"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
-            </LinearLayout>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
