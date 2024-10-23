@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.cs218marketmanager.data.model.Notification;
 import com.example.cs218marketmanager.data.model.User;
@@ -19,10 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "marketmanager.db";
