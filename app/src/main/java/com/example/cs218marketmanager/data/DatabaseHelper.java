@@ -432,12 +432,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_PRODUCT_PIC, imageBytes); // Store the product picture
         // Update the product picture in the vendor table for the specific userId
-        long result = db.update(TABLE_VENDOR, values, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        long result = db.update(TABLE_VENDOR, values, COLUMN_VENDOR_ID + " = ?", new String[]{String.valueOf(vendorId)});
         if (result == 0) {
             // Handle the case where no rows were updated (i.e., vendor ID not found)
-            Log.e("DatabaseHelper", "Failed to update product picture for user ID: " + userId);
+            Log.e("DatabaseHelper", "Failed to update product picture for user ID: " + vendorId);
         } else {
-            Log.d("DatabaseHelper", "Product picture updated for user ID: " + userId);
+            Log.d("DatabaseHelper", "Product picture updated for user ID: " + vendorId);
         }
         db.close(); // Close the database
     }
