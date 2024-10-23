@@ -48,6 +48,7 @@
         <activity android:name=".VendorFinanceActivity"/>
         <activity android:name=".SettingsActivity"/>
         <activity android:name=".ManagerAddPayment"/>
+        <activity android:name=".NotificationActivity"/>
 
 
     </application>

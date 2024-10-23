@@ -1,7 +1,4 @@
 package com.example.cs218marketmanager.data;
-import static android.app.DownloadManager.COLUMN_ID;
-
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -10,8 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.example.cs218marketmanager.data.model.Notification;
 import com.example.cs218marketmanager.data.model.User;
 import com.example.cs218marketmanager.data.model.VendorApplication;
 import com.example.cs218marketmanager.data.model.Vendor;
@@ -21,14 +18,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "marketmanager.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     //Tables
     private static final String TABLE_USER = "users";
     private static final String TABLE_VENDOR_APPLICATION = "vendorApplication";
@@ -65,6 +60,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_PAYMENT_DATE = "paymentDate";
     private static final String COLUMN_AMOUNT = "amount";
     private static final String COLUMN_DESCRIPTION = "description";
+
+    //Notification table
+    private static final String TABLE_NOTIFICATION = "notification";
+    private static final String COLUMN_MESSAGE = "message";
+    private static final String COLUMN_TIMESTAMP = "notifTime";
+    private static final String COLUMN_IS_READ = "isRead";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -117,13 +119,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + COLUMN_VENDOR_ID + ") REFERENCES " + TABLE_VENDOR + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
         db.execSQL(CREATE_PAYMENT_TABLE);
 
+        // Create NOTIFICATION table
+        String CREATE_NOTIFICATION_TABLE = "CREATE TABLE " + TABLE_NOTIFICATION + " ("
+                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COLUMN_VENDOR_ID + " INTEGER, "
+                + COLUMN_MESSAGE + " TEXT, "
+                + COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                + COLUMN_IS_READ + " INTEGER DEFAULT 0, "
+                + "FOREIGN KEY(" + COLUMN_VENDOR_ID + ") REFERENCES " + TABLE_VENDOR + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
+        db.execSQL(CREATE_NOTIFICATION_TABLE);
+
         addDefaultAdminUserIfNotExists(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-    }
+        if(oldVersion < 7) {
+            String CREATE_NOTIFICATION_TABLE = "CREATE TABLE " + TABLE_NOTIFICATION + " ("
+                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_VENDOR_ID + " INTEGER, "
+                    + COLUMN_MESSAGE + " TEXT, "
+                    + COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                    + COLUMN_IS_READ + " INTEGER DEFAULT 0, "
+                    + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
+            db.execSQL(CREATE_NOTIFICATION_TABLE);
+        }
+    };
     public long addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -795,6 +816,70 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return 0; // Default value if no balance due found
     }
+
+    public boolean createNotification(Long vendorId, String message) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_VENDOR_ID, vendorId);
+        values.put(COLUMN_MESSAGE, message);
+        long result = db.insert(TABLE_NOTIFICATION, null, values);
+        return result != -1;  // Return true if successful
+    }
+
+    public List<Notification> getNotifications(Long vendorId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Notification> notifications = new ArrayList<>();
+
+        // Query to get notifications for a specific vendor, ordered by timestamp
+        String selectQuery = "SELECT * FROM " + TABLE_NOTIFICATION + " WHERE " + COLUMN_VENDOR_ID + " = ? " + " ORDER BY " + COLUMN_TIMESTAMP + " DESC";
+
+        // Pass the vendorId as an argument to bind to the query
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(vendorId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                // Retrieve data from the cursor
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID)); // id
+                String message = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE)); // message
+                String timestamp = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP)); // timestamp
+                boolean isRead = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_READ)) == 1; // isRead
+
+                // Create the Notification object and set its properties
+                Notification notification = new Notification();
+                notification.setId(id);
+                notification.setMessage(message);
+                notification.setTimestamp(timestamp);
+                notification.setRead(isRead);
+
+                // Add the notification to the list
+                notifications.add(notification);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close(); // Close the cursor after use
+        return notifications;
+    }
+
+    public Long getVendorIdForUser(Long userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Long vendorId = null;
+
+        String selectQuery = "SELECT " + COLUMN_ID + " FROM " + TABLE_VENDOR + " WHERE " + COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                vendorId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID));
+            }
+            cursor.close();
+        }
+
+        return vendorId;
+    }
+
+
+
+
 
 
 

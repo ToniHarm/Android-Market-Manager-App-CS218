@@ -33,6 +33,8 @@ public class ManagerAddPayment extends AppCompatActivity {
     private EditText editTextPaymentAmount, editTextPaymentDate, editTextPaymentDescription, editTextFineAmount;
     private Button btnSubmitPayment, btnSubmitFine;
 
+    private Long vendorId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +85,9 @@ public class ManagerAddPayment extends AppCompatActivity {
                     String selectedStall = selectedItem.toString();
                     // Fetch the balance due for the selected vendor
                     double balanceDue = databaseHelper.getBalanceDueByStallNumber(selectedStall);
+
+                    // Fetch the vendor ID for the selected stall
+                    vendorId = databaseHelper.getVendorIdByStallNumber(selectedStall);
 
                     // Update the TextView to show the balance due
                     TextView textViewBalanceDue = findViewById(R.id.textBalancedue);
@@ -156,6 +161,7 @@ public class ManagerAddPayment extends AppCompatActivity {
                     // Add payment for vendor
                     boolean success = databaseHelper.addPaymentForVendor(selectedStall, paymentAmount, paymentDate, paymentDescription);
                     if (success) {
+                        databaseHelper.createNotification(vendorId, "A payment of $" + paymentAmount + " has been received for stall " + selectedStall + ".");
                         Toast.makeText(ManagerAddPayment.this, "Payment added successfully", Toast.LENGTH_SHORT).show();
                         recreate();
                     } else {
@@ -194,6 +200,7 @@ public class ManagerAddPayment extends AppCompatActivity {
                     // Add fine for vendor
                     boolean success = databaseHelper.addFineForVendor(selectedStall, fineAmount);
                     if (success) {
+                        databaseHelper.createNotification(vendorId, "A fine has been issued to you.");
                         Toast.makeText(ManagerAddPayment.this, "Fine added successfully", Toast.LENGTH_SHORT).show();
                         recreate();
                     } else {
