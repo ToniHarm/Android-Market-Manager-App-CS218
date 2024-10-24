@@ -182,7 +182,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="133dp"
                         android:layout_margin="0dp"
-                        android:src="@drawable/vegetable_market" />
+
+                        />
 
                     <!-- Button to Upload Photo -->
                     <Button

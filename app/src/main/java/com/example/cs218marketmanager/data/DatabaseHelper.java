@@ -422,6 +422,92 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return products;
     }
 
+
+    public void addVendorProductPicture(long userId, byte[] imageBytes) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PRODUCT_PIC, imageBytes);
+
+        // Update the vendor row with the new product image
+        int rowsAffected = db.update(TABLE_VENDOR, values, "user_id = ?", new String[]{String.valueOf(userId)});
+        if (rowsAffected == 0) {
+            // Optionally handle the case where no rows were updated (vendor not found)
+            Log.e("DATABASE", "Failed to update product image for userId: " + userId);
+        }
+    }
+
+
+
+
+
+    // Add user profile picture for the user
+    public void addUserProfilePicture(long userId, byte[] imageBytes) {
+        SQLiteDatabase db = this.getWritableDatabase(); // Open a writable database
+        ContentValues values = new ContentValues(); // Create a ContentValues object to hold the data
+
+        values.put(COLUMN_PROFILE_PIC, imageBytes); // Store the profile picture
+
+        // Use an UPSERT pattern to insert or update the profile picture
+        // Adjust the SQL statement according to your schema
+        long result = db.update(TABLE_USER, values, COLUMN_ID + " = ?", new String[]{String.valueOf(userId)});
+
+        if (result == 0) {
+            // Handle the case where no rows were updated (i.e., user ID not found)
+            Log.e("DatabaseHelper", "Failed to update profile picture for user ID: " + userId);
+        } else {
+            Log.d("DatabaseHelper", "Profile picture updated for user ID: " + userId);
+        }
+
+         // Close the database
+    }
+
+    // Get user profile picture for the user
+    public byte[] getUserProfilePicture(long userId) {
+        SQLiteDatabase db = this.getReadableDatabase(); // Open a readable database
+        byte[] profilePic = null;
+
+        // Query the database for the profile picture based on the user ID
+        Cursor cursor = db.query(TABLE_USER,
+                new String[]{COLUMN_PROFILE_PIC},  // Select the profile picture column
+                COLUMN_ID + "=?",  // Where clause (match user ID)
+                new String[]{String.valueOf(userId)},  // Where argument (user ID)
+                null, null, null);  // No group by, having, or order by
+
+        // If a result is found, retrieve the profile picture
+        if (cursor != null && cursor.moveToFirst()) {
+            profilePic = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_PROFILE_PIC));
+        }
+
+        if (cursor != null) {
+            cursor.close(); // Close the cursor to avoid memory leaks
+        }
+
+         // Close the database connection
+        return profilePic; // Return the profile picture
+    }
+
+    public byte[] getVendorProductPicture(long userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        byte[] productPic = null;
+        // Query the database for the product picture based on the user ID
+        Cursor cursor = db.query(TABLE_VENDOR,
+                new String[]{COLUMN_PRODUCT_PIC}, // Select the product picture column
+                COLUMN_USER_ID + "=?", // Where clause (match user ID)
+                new String[]{String.valueOf(userId)}, // Where argument (user ID)
+                null, null, null); // No group by, having, or order by
+        // If a result is found, retrieve the product picture
+        if (cursor != null && cursor.moveToFirst()) {
+            productPic = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_PIC));
+        }
+        if (cursor != null) {
+            cursor.close(); // Close the cursor to avoid memory leaks
+        }
+         // Close the database connection
+        return productPic; // Return the product picture
+    }
+
+
+
     // Method to get Manager details by ID (returns name and email)
     public String[] getManagerDetailsById(Long id) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -642,31 +728,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return managers; // Return the list of managers
     }
 
-//    public boolean deleteManagerByEmail(String email) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        boolean isDeleted = false;  // Track whether the deletion was successful
-//
-//        // Use a try-catch block to handle potential exceptions
-//        try {
-//            // Delete the manager where the email matches
-//            int rowsAffected = db.delete("ManagerTable", "email=?", new String[]{email});
-//
-//            // Check if any rows were affected
-//            isDeleted = rowsAffected > 0;
-//
-//            // Log the result
-//            Log.d("DatabaseHelper", "Delete operation successful: " + isDeleted + " for email: " + email);
-//        } catch (Exception e) {
-//            // Log the exception
-//            Log.e("DatabaseHelper", "Error deleting manager by email: " + email, e);
-//        } finally {
-//            // Close the database if necessary
-//
-//        }
-//
-//        return isDeleted;
-//    }
-
 
     // Method to delete a manager by email
     public boolean deleteManagerById(String email) {
@@ -690,6 +751,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean updateUser(long userId, String username, String email, String firstName, String lastName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, username);
+        values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_FIRST_NAME, firstName);
+        values.put(COLUMN_LAST_NAME, lastName);
+
+        // Update user record and get the number of rows affected
+        int rowsAffected = db.update(TABLE_USER, values, "id = ?", new String[]{String.valueOf(userId)});
+
+        // Return true if at least one row was updated, otherwise false
+        return rowsAffected > 0;
+    }
+
+
 
     public boolean updateApplicationStatus(long applicationId, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -700,6 +777,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int result = db.update(TABLE_VENDOR_APPLICATION, values, COLUMN_ID + " = ?", new String[]{String.valueOf(applicationId)});
 
         return result > 0; // Return true if update was successful
+    }
+
+    public boolean vendorExists(long userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_VENDOR,
+                new String[]{COLUMN_ID}, // Select only the vendor ID to check existence
+                COLUMN_USER_ID + "=?",
+                new String[]{String.valueOf(userId)},
+                null, null, null);
+
+        boolean exists = cursor != null && cursor.moveToFirst();
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return exists;
     }
 
     public Vendor getVendorFinance(long userId) {
