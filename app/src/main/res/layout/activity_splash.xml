@@ -30,7 +30,7 @@
             android:layout_centerInParent="true"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
-            app:lottie_rawRes="@raw/splash_animation" />
+            app:lottie_rawRes="@raw/vegetable" />
 
         <TextView
             android:id="@+id/animatedTextView"

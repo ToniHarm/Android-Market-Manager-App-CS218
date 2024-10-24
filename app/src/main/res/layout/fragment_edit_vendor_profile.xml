@@ -40,7 +40,7 @@
 
             <!-- Button to Upload Photo -->
             <Button
-                android:id="@+id/uploadProfilePictureButton"
+                android:id="@+id/uploadProPicButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Upload Profile Picture"
@@ -62,42 +62,43 @@
                     android:padding="16dp">
 
                     <!-- Editable Full Name -->
-                    <EditText
-                        android:id="@+id/editTextFullName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Full Name"
-                        android:text="John Doe"
-                        android:textSize="18sp"
-                        android:layout_marginBottom="15dp" />
 
                     <!-- Editable Date of Birth -->
                     <EditText
-                        android:id="@+id/editTextDob"
+                        android:id="@+id/editUserName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Date of Birth"
-                        android:text="01-01-1980"
+                        android:layout_marginBottom="15dp"
+                        android:hint="User Name"
+                        android:text=""
+                        android:textSize="18sp" />
+
+                    <EditText
+                        android:id="@+id/editFirstName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="First name"
+                        android:text=""
                         android:textSize="18sp"
                         android:layout_marginBottom="15dp" />
 
                     <!-- Editable Phone Number -->
+
                     <EditText
-                        android:id="@+id/editTextPhoneNumber"
+                        android:id="@+id/editLastName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Phone Number"
-                        android:text="+679 9965432"
-                        android:textSize="18sp"
-                        android:inputType="phone"
-                        android:layout_marginBottom="15dp" />
+                        android:layout_marginBottom="15dp"
+                        android:hint="Last Name"
+                        android:text=""
+                        android:textSize="18sp" />
 
                     <EditText
                         android:id="@+id/editTextEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Email"
-                        android:text="Email: jdoe@gmail.com"
+                        android:text=""
                         android:textSize="18sp"
                         android:layout_marginBottom="15dp" />
                 </LinearLayout>
@@ -178,22 +179,24 @@
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
+                    <!-- Button to Upload Photo -->
+
                     <ImageView
+                        android:id="@+id/imageViewProductPhoto"
                         android:layout_width="wrap_content"
                         android:layout_height="133dp"
                         android:layout_margin="0dp"
                         android:src="@drawable/vegetable_market" />
 
-                    <!-- Button to Upload Photo -->
                     <Button
-                        android:id="@+id/uploadProductPhotoButton"
+                        android:id="@+id/uploadProdPicButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="+Add Photo"
                         android:layout_gravity="center"
-                        android:backgroundTint="@color/lightGrey"
                         android:layout_marginTop="15dp"
-                        android:layout_marginBottom="15dp"/>
+                        android:layout_marginBottom="15dp"
+                        android:backgroundTint="@color/lightGrey"
+                        android:text="+Add Photo" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

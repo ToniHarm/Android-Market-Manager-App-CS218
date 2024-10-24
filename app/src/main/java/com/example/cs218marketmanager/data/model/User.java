@@ -1,6 +1,16 @@
 package com.example.cs218marketmanager.data.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+
+    public User(long userId, String username, String email, String firstName, String lastName) {
+        this.username = username;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public enum Role {
         VENDOR,
         MANAGER,

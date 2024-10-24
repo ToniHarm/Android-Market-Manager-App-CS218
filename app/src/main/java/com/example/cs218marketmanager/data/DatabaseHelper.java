@@ -56,7 +56,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
@@ -333,14 +332,106 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
 
         if (cursor != null && cursor.moveToFirst()) {
-            do {
-                String productName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_NAME));
-                products.add(productName);
-            } while (cursor.moveToNext());
+            // Split the product names (comma-separated) and add to the list
+            @SuppressLint("Range") String productNames = cursor.getString(cursor.getColumnIndex(COLUMN_PRODUCT_NAME));
+            if (productNames != null && !productNames.isEmpty()) {
+                products = Arrays.asList(productNames.split(","));  // Split and convert to a list
+            }
         }
+
+        // Close the cursor and database
         cursor.close();
-        return products;
+        db.close();
+
+        return products; // Return the list of products
     }
+
+
+    public void addVendorProductPicture(long vendorId, byte[] imageBytes) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PRODUCT_PIC, imageBytes); // Store the product picture
+        // Update the product picture in the vendor table for the specific userId
+        long result = db.update(TABLE_VENDOR, values, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        if (result == 0) {
+            // Handle the case where no rows were updated (i.e., vendor ID not found)
+            Log.e("DatabaseHelper", "Failed to update product picture for user ID: " + userId);
+        } else {
+            Log.d("DatabaseHelper", "Product picture updated for user ID: " + userId);
+        }
+        db.close(); // Close the database
+    }
+
+
+
+
+    // Add user profile picture for the user
+    public void addUserProfilePicture(long userId, byte[] imageBytes) {
+        SQLiteDatabase db = this.getWritableDatabase(); // Open a writable database
+        ContentValues values = new ContentValues(); // Create a ContentValues object to hold the data
+
+        values.put(COLUMN_PROFILE_PIC, imageBytes); // Store the profile picture
+
+        // Use an UPSERT pattern to insert or update the profile picture
+        // Adjust the SQL statement according to your schema
+        long result = db.update(TABLE_USER, values, COLUMN_ID + " = ?", new String[]{String.valueOf(userId)});
+
+        if (result == 0) {
+            // Handle the case where no rows were updated (i.e., user ID not found)
+            Log.e("DatabaseHelper", "Failed to update profile picture for user ID: " + userId);
+        } else {
+            Log.d("DatabaseHelper", "Profile picture updated for user ID: " + userId);
+        }
+
+        db.close(); // Close the database
+    }
+
+    // Get user profile picture for the user
+    public byte[] getUserProfilePicture(long userId) {
+        SQLiteDatabase db = this.getReadableDatabase(); // Open a readable database
+        byte[] profilePic = null;
+
+        // Query the database for the profile picture based on the user ID
+        Cursor cursor = db.query(TABLE_USER,
+                new String[]{COLUMN_PROFILE_PIC},  // Select the profile picture column
+                COLUMN_ID + "=?",  // Where clause (match user ID)
+                new String[]{String.valueOf(userId)},  // Where argument (user ID)
+                null, null, null);  // No group by, having, or order by
+
+        // If a result is found, retrieve the profile picture
+        if (cursor != null && cursor.moveToFirst()) {
+            profilePic = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_PROFILE_PIC));
+        }
+
+        if (cursor != null) {
+            cursor.close(); // Close the cursor to avoid memory leaks
+        }
+
+        db.close(); // Close the database connection
+        return profilePic; // Return the profile picture
+    }
+
+    public byte[] getVendorProductPicture(long userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        byte[] productPic = null;
+        // Query the database for the product picture based on the user ID
+        Cursor cursor = db.query(TABLE_VENDOR,
+                new String[]{COLUMN_PRODUCT_PIC}, // Select the product picture column
+                COLUMN_USER_ID + "=?", // Where clause (match user ID)
+                new String[]{String.valueOf(userId)}, // Where argument (user ID)
+                null, null, null); // No group by, having, or order by
+        // If a result is found, retrieve the product picture
+        if (cursor != null && cursor.moveToFirst()) {
+            productPic = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_PIC));
+        }
+        if (cursor != null) {
+            cursor.close(); // Close the cursor to avoid memory leaks
+        }
+        db.close(); // Close the database connection
+        return productPic; // Return the product picture
+    }
+
+
 
     // Method to get Manager details by ID (returns name and email)
     public String[] getManagerDetailsById(Long id) {
@@ -561,6 +652,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void updateUser(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, user.getUsername());
+        values.put(COLUMN_EMAIL, user.getEmail());
+        values.put(COLUMN_FIRST_NAME, user.getFirstName());
+        values.put(COLUMN_LAST_NAME, user.getLastName());//or however you name your fields
+
+        // Update the user based on user ID
+        db.update("users", values, "id = ?", new String[]{String.valueOf(user.getId())});
+        db.close(); // Close the database connection
+    }
 
     public boolean updateApplicationStatus(long applicationId, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -572,5 +675,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return result > 0; // Return true if update was successful
     }
+
+    public boolean vendorExists(long userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_VENDOR,
+                new String[]{COLUMN_ID}, // Select only the vendor ID to check existence
+                COLUMN_USER_ID + "=?",
+                new String[]{String.valueOf(userId)},
+                null, null, null);
+
+        boolean exists = cursor != null && cursor.moveToFirst();
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+        return exists;
+    }
+
+
+
+
+
 
 }

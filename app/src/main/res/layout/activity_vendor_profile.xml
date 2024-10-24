@@ -35,14 +35,6 @@
                 android:layout_height="100dp"
                 android:layout_marginBottom="20dp"
                 android:src="@drawable/profile_avatar" />
-            <Button
-                android:id="@+id/takePhotoButton1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Take Photo"
-                android:backgroundTint="@color/limeGreen"
-                android:textColor="@color/white" />
 
             <Button
                 android:id="@+id/editButton"
@@ -158,17 +150,8 @@
                     android:id="@+id/imageViewProductPhoto"
                     android:layout_width="wrap_content"
                     android:layout_height="133dp"
-                    android:layout_margin="0dp"
-                    android:src="@drawable/vegetable_market" />
+                    android:layout_margin="0dp"/>
 
-                <Button
-                    android:id="@+id/takePhotoButton2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:backgroundTint="@color/limeGreen"
-                    android:text="@string/take_photo"
-                    android:textColor="@color/white" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
