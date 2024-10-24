@@ -110,6 +110,9 @@ public class EditProfileActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(v -> {
             loadCurrentUserDetailsAndImages(); // Reload the original images
             Toast.makeText(EditProfileActivity.this, "Changes discarded", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(EditProfileActivity.this, VendorProfileActivity.class);
+            startActivity(intent);
+            finish(); // End the EditProfileActivity
         });
     }
 
