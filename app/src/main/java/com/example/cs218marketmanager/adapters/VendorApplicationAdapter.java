@@ -15,6 +15,7 @@ import com.example.cs218marketmanager.data.DatabaseHelper;
 import com.example.cs218marketmanager.data.model.User;
 import com.example.cs218marketmanager.data.model.VendorApplication;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VendorApplicationAdapter extends RecyclerView.Adapter<VendorApplicationAdapter.ViewHolder> {
@@ -23,8 +24,20 @@ public class VendorApplicationAdapter extends RecyclerView.Adapter<VendorApplica
     private Context context;
 
     public VendorApplicationAdapter(List<VendorApplication> applications, Context context) {
-        this.applications = applications;
+        // Filter the applications to only include those that are pending
+        this.applications = filterPendingApplications(applications);
         this.context = context;
+    }
+
+    private List<VendorApplication> filterPendingApplications(List<VendorApplication> applications) {
+        List<VendorApplication> pendingApplications = new ArrayList<>();
+        for (VendorApplication application : applications) {
+            // Include only applications that are PENDING or have no status
+            if (application.getStatus() == null || application.getStatus().equals("PENDING")) {
+                pendingApplications.add(application);
+            }
+        }
+        return pendingApplications;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -54,7 +67,7 @@ public class VendorApplicationAdapter extends RecyclerView.Adapter<VendorApplica
         VendorApplication application = applications.get(position);
         User user = application.getUser();
 
-        holder.textViewUsername.setText("Username " + user.getUsername());
+        holder.textViewUsername.setText("Username: " + user.getUsername());
         holder.textViewVendorName.setText("Vendor: " + user.getFirstName() + " " + user.getLastName());
         holder.textViewEmail.setText("Email: " + user.getEmail());
 
@@ -72,14 +85,16 @@ public class VendorApplicationAdapter extends RecyclerView.Adapter<VendorApplica
             // Update the application status to 'Approved'
             application.setStatus("APPROVED");
 
-            // Update the database
-            updateApplicationStatus(application, "APPROVED");
+            // Save user details and product details, set stall number to null in the vendor table
+            saveApprovedVendor(application);
 
             // Notify the user (optional)
             notifyVendor(user, "Your application has been approved!");
 
-            // Refresh the item view (optional: remove or disable buttons, update UI)
-            notifyItemChanged(position);
+            // Remove the application from the list
+            applications.remove(position);
+            notifyItemRemoved(position); // Notify adapter about the item removal
+            notifyItemRangeChanged(position, applications.size()); // Update remaining items
         });
 
         holder.buttonReject.setOnClickListener(v -> {
@@ -92,8 +107,10 @@ public class VendorApplicationAdapter extends RecyclerView.Adapter<VendorApplica
             // Notify the user (optional)
             notifyVendor(user, "Your application has been rejected.");
 
-            // Refresh the item view (optional: remove or disable buttons, update UI)
-            notifyItemChanged(position);
+            // Remove the application from the list
+            applications.remove(position);
+            notifyItemRemoved(position); // Notify adapter about the item removal
+            notifyItemRangeChanged(position, applications.size()); // Update remaining items
         });
     }
 
@@ -103,15 +120,15 @@ public class VendorApplicationAdapter extends RecyclerView.Adapter<VendorApplica
     }
 
     public void updateApplications(List<VendorApplication> newApplications) {
+        // Update the applications with the new list, filtered for pending statuses
         applications.clear();
-        applications.addAll(newApplications);
+        applications.addAll(filterPendingApplications(newApplications));
         notifyDataSetChanged();
     }
 
     private void updateApplicationStatus(VendorApplication application, String status) {
         // Get the database helper and update the application status
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
-
         boolean isUpdated = databaseHelper.updateApplicationStatus(application.getId(), status);
 
         if (isUpdated) {
@@ -126,7 +143,24 @@ public class VendorApplicationAdapter extends RecyclerView.Adapter<VendorApplica
         Toast.makeText(context, user.getUsername() + ": " + message, Toast.LENGTH_SHORT).show();
     }
 
+    private void saveApprovedVendor(VendorApplication application) {
+        // Get the database helper
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
 
+        // Save user details and product details in the vendor table
+        User user = application.getUser();
+        boolean isSaved = databaseHelper.saveVendorDetails(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), application.getProducts());
 
+        // Set stall number to null
+        boolean isStallNullified = databaseHelper.setStallNumberToNull(user.getId());
 
+        if (isSaved && isStallNullified) {
+            Toast.makeText(context, "Vendor details saved successfully!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Failed to save vendor details.", Toast.LENGTH_SHORT).show();
+        }
+
+        // Update the application status to 'APPROVED'
+        updateApplicationStatus(application, "APPROVED");
+    }
 }
