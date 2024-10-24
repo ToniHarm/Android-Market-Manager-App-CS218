@@ -1,13 +1,10 @@
 package com.example.cs218marketmanager;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -32,68 +29,74 @@ import java.util.List;
 public class VendorProfileActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST_CODE = 100;
     private static final int IMAGE_CAPTURE_CODE = 101;
-    private static final int EDIT_PROFILE_REQUEST_CODE = 0; // Defined as a class-level constant
+    private static final int EDIT_PROFILE_REQUEST_CODE = 0;
 
     private ImageView profileImageView, productImageView;
     private TextView profileDetailsTextView, textViewStallNumber, textViewProduct;
-    private BottomNavigationView bnv;
     private DatabaseHelper databaseHelper;
     private PreferencesHelper preferencesHelper;
+
+    private Button editButton;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        preferencesHelper = new PreferencesHelper(this);
-        Long id = preferencesHelper.getUserId();
-        if (id == null || id.toString().isEmpty()) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vendor_profile);
 
         // Initialize Views
         profileImageView = findViewById(R.id.profilePicture);
-        productImageView = findViewById(R.id.imageViewProductPhoto); // Assuming this exists in the layout
+        productImageView = findViewById(R.id.imageViewProductPhoto);
         profileDetailsTextView = findViewById(R.id.profileDetailsTextView);
         textViewStallNumber = findViewById(R.id.textViewStallNumber);
         textViewProduct = findViewById(R.id.textViewProduct);
+        editButton = findViewById(R.id.editButton);
 
-        // Find the Edit Profile button by its ID
-        Button editButton = findViewById(R.id.editButton);
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(VendorProfileActivity.this, EditProfileActivity.class);
-                startActivityForResult(intent, EDIT_PROFILE_REQUEST_CODE); // Start with request code
-            }
-        });
+        editButton.setVisibility(View.GONE); // Initially hide the button
 
+        // Initialize database and preferences helpers
         databaseHelper = new DatabaseHelper(this);
         preferencesHelper = new PreferencesHelper(this);
         long userId = preferencesHelper.getUserId();
+
+        // Check for a valid user ID
         if (userId != -1) {
             User user = databaseHelper.getUserById(userId);
             if (user != null) {
                 displayUserDetails(user);
                 displayVendorDetails(userId);
+                updateEditButtonVisibility(userId);
             } else {
-                Toast.makeText(this, "User not found!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "User details not found.", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(this, "Invalid user ID!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish(); // Exit on invalid user ID
         }
+
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(VendorProfileActivity.this, EditProfileActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+            }
+        });
 
         // Load saved images
         loadImages();
 
         // Bottom Navigation
-        bnv = findViewById(R.id.nav_view);
+        setupBottomNavigation();
+    }
+
+    private void setupBottomNavigation() {
+        // Bottom Navigation
+        BottomNavigationView bnv = findViewById(R.id.nav_view);
         bnv.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                // Using if-else for navigation
                 if (item.getItemId() == R.id.vendor_home) {
                     Intent intent = new Intent(VendorProfileActivity.this, VendorHomeActivity.class);
                     startActivity(intent);
@@ -126,6 +129,8 @@ public class VendorProfileActivity extends AppCompatActivity {
             if (profileImageBytes != null) {
                 Bitmap profileImage = BitmapFactory.decodeByteArray(profileImageBytes, 0, profileImageBytes.length);
                 profileImageView.setImageBitmap(profileImage);
+            } else {
+                profileImageView.setImageResource(R.drawable.profile_avatar); // Set a default image if none found
             }
             // Load product image
             byte[] productImageBytes = databaseHelper.getVendorProductPicture(userId); // Fetch from vendor table
@@ -133,13 +138,12 @@ public class VendorProfileActivity extends AppCompatActivity {
                 Bitmap productImage = BitmapFactory.decodeByteArray(productImageBytes, 0, productImageBytes.length);
                 productImageView.setImageBitmap(productImage);
             } else {
-                Toast.makeText(this, "No product image found", Toast.LENGTH_SHORT).show();
+                productImageView.setImageResource(R.drawable.vegetable_market); // Set a default image if none found
             }
         } else {
             Toast.makeText(this, "Invalid user ID!", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void displayUserDetails(User user) {
         profileDetailsTextView.setText(
@@ -151,21 +155,23 @@ public class VendorProfileActivity extends AppCompatActivity {
     }
 
     private void displayVendorDetails(Long userId) {
-        Vendor vendor = databaseHelper.getVendorDetails(userId); // Retrieve vendor details
+        Vendor vendor = databaseHelper.getVendorDetails(userId);
         if (vendor != null) {
             textViewStallNumber.setText("Stall Number: " + vendor.getStallNumber());
-            // If products is a list, convert it to a comma-separated string
-            List<String> productsList = vendor.getProducts(); // Assuming getProducts() returns a List<String>
-            if (productsList != null && !productsList.isEmpty()) {
-                // Join the list elements into a single string without brackets
-                String productsString = TextUtils.join(", ", productsList); // e.g., "Product1, Product2, Product3"
-                textViewProduct.setText(productsString);
-            } else {
-                textViewProduct.setText("No products available");
-            }
+            List<String> productsList = vendor.getProducts();
+            textViewProduct.setText((productsList != null && !productsList.isEmpty())
+                    ? TextUtils.join(", ", productsList)
+                    : "No products available");
         } else {
             Log.e("VendorProfile", "Vendor details not found for user ID: " + userId);
+            textViewStallNumber.setText("No stall number available");
+            textViewProduct.setText("No products available");
         }
+    }
+
+    private void updateEditButtonVisibility(Long userId) {
+        String applicationStatus = databaseHelper.getApplicationStatus(userId);
+        editButton.setVisibility("APPROVED".equalsIgnoreCase(applicationStatus) ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -175,16 +181,28 @@ public class VendorProfileActivity extends AppCompatActivity {
             User updatedUser = (User) data.getSerializableExtra("UpdatedUser");
             if (updatedUser != null) {
                 displayUserDetails(updatedUser);
-                loadUserProfilePicture(updatedUser.getId()); // Load updated profile picture from the database
+                loadUserProfilePicture(updatedUser.getId());
             }
         }
     }
 
     private void loadUserProfilePicture(long userId) {
-        byte[] profileImageBytes = databaseHelper.getUserProfilePicture(userId); // Fetch profile image BLOB
+        byte[] profileImageBytes = databaseHelper.getUserProfilePicture(userId);
         if (profileImageBytes != null) {
             Bitmap profileImage = BitmapFactory.decodeByteArray(profileImageBytes, 0, profileImageBytes.length);
             profileImageView.setImageBitmap(profileImage);
+        } else {
+            profileImageView.setImageResource(R.drawable.profile_avatar); // Set a default image if none found
+        }
+    }
+
+    public void updateVendorApprovalStatus(long vendorId, boolean isApproved) {
+        Vendor vendor = databaseHelper.getVendorDetails(vendorId);
+        if (vendor != null) {
+            vendor.setApplicationApproved(isApproved);
+            editButton.setVisibility(isApproved ? View.VISIBLE : View.GONE);
+        } else {
+            Toast.makeText(this, "Vendor details not found!", Toast.LENGTH_SHORT).show();
         }
     }
 }

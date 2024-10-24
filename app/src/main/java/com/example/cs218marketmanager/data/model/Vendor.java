@@ -13,6 +13,7 @@ public class Vendor {
     private double balance; // Total balance for the vendor
     private double fine; // Total fines for the vendor
     private double payment; // Total payments made by the vendor
+    private boolean approved;
 
 
     public Vendor() {
@@ -111,5 +112,14 @@ public class Vendor {
 
     public void setPayment(double payment) {
         this.payment = payment;
+    }
+
+    // Setter for application approval status
+    public void setApplicationApproved(boolean approved) {
+        this.approved = approved;
+    }
+
+    public boolean isApplicationApproved() {
+        return approved;
     }
 }

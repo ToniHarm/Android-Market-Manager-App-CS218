@@ -157,7 +157,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_ROLE, user.getRole().toString());
 
         long result = db.insert(TABLE_USER, null, values);
-        db.close();
+
+        // If user is registered as a vendor, add entry to vendor table
+        if (user.getRole() == User.Role.VENDOR) {
+            ContentValues vendorValues = new ContentValues();
+            vendorValues.put(TABLE_VENDOR, COLUMN_USER_ID);  // Insert the user ID into the vendor table
+            db.insert("vendor", null, vendorValues);  // Save in the vendor table
+        }
+     //
         return result;
     }
 
@@ -196,7 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_STATUS, status); // Ensure status is correct
 
         db.insert(TABLE_VENDOR_APPLICATION, null, values);
-        db.close();
+
     }
 
     // Method to save vendor details into the vendor table
@@ -208,7 +215,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_PRODUCT_NAME, joinedProductNames);
 
         long result = db.insert(TABLE_VENDOR, null, values);
-        db.close();
+
         return result != -1;
     }
 
@@ -219,7 +226,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_STALL_NUMBER, (String) null); // Setting stall number to null
 
         long result = db.update(TABLE_VENDOR, values, "user_id = ?", new String[]{String.valueOf(userId)});
-        db.close();
+
         return result != -1;
     }
 
@@ -232,7 +239,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_TOTAL_BALANCE, 100);
 
         long result = db.update(TABLE_VENDOR, values, "user_id = ?", new String[]{String.valueOf(userId)});
-        db.close();
+
         return result != -1; // Return true if the update was successful
     }
 
@@ -252,7 +259,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
+
         return takenStalls;
     }
 
@@ -304,11 +311,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        db.close();
+        if (cursor != null) { cursor.close();}
         return vendor;
     }
 
@@ -341,7 +344,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         cursor.close();
-        db.close();
+
         return user;
     }
     public boolean usernameExists(String username){
@@ -424,20 +427,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public void addVendorProductPicture(long vendorId, byte[] imageBytes) {
+    public void addVendorProductPicture(long userId, byte[] imageBytes) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_PRODUCT_PIC, imageBytes); // Store the product picture
-        // Update the product picture in the vendor table for the specific userId
-        long result = db.update(TABLE_VENDOR, values, COLUMN_VENDOR_ID + " = ?", new String[]{String.valueOf(vendorId)});
-        if (result == 0) {
-            // Handle the case where no rows were updated (i.e., vendor ID not found)
-            Log.e("DatabaseHelper", "Failed to update product picture for user ID: " + vendorId);
-        } else {
-            Log.d("DatabaseHelper", "Product picture updated for user ID: " + vendorId);
+        values.put(COLUMN_PRODUCT_PIC, imageBytes);
+
+        // Update the vendor row with the new product image
+        int rowsAffected = db.update(TABLE_VENDOR, values, "user_id = ?", new String[]{String.valueOf(userId)});
+        if (rowsAffected == 0) {
+            // Optionally handle the case where no rows were updated (vendor not found)
+            Log.e("DATABASE", "Failed to update product image for userId: " + userId);
         }
-        db.close(); // Close the database
     }
+
 
 
 
@@ -460,7 +462,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d("DatabaseHelper", "Profile picture updated for user ID: " + userId);
         }
 
-        db.close(); // Close the database
+         // Close the database
     }
 
     // Get user profile picture for the user
@@ -484,7 +486,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close(); // Close the cursor to avoid memory leaks
         }
 
-        db.close(); // Close the database connection
+         // Close the database connection
         return profilePic; // Return the profile picture
     }
 
@@ -504,7 +506,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.close(); // Close the cursor to avoid memory leaks
         }
-        db.close(); // Close the database connection
+         // Close the database connection
         return productPic; // Return the product picture
     }
 
@@ -588,7 +590,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
+
         return vendorApplication;
     }
 
@@ -640,7 +642,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
+
         return vendorApplications;
     }
 
@@ -676,35 +678,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.close();
         }
-        db.close();
+
 
         return managers; // Return the list of managers
     }
-
-//    public boolean deleteManagerByEmail(String email) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        boolean isDeleted = false;  // Track whether the deletion was successful
-//
-//        // Use a try-catch block to handle potential exceptions
-//        try {
-//            // Delete the manager where the email matches
-//            int rowsAffected = db.delete("ManagerTable", "email=?", new String[]{email});
-//
-//            // Check if any rows were affected
-//            isDeleted = rowsAffected > 0;
-//
-//            // Log the result
-//            Log.d("DatabaseHelper", "Delete operation successful: " + isDeleted + " for email: " + email);
-//        } catch (Exception e) {
-//            // Log the exception
-//            Log.e("DatabaseHelper", "Error deleting manager by email: " + email, e);
-//        } finally {
-//            // Close the database if necessary
-//            db.close();
-//        }
-//
-//        return isDeleted;
-//    }
 
 
     // Method to delete a manager by email
@@ -717,7 +694,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Execute the delete query: only delete users where the role is MANAGER and the email matches
         int rowsAffected = db.delete("users", "email = ? AND role = ?", new String[]{email, "MANAGER"});
 
-        db.close(); // Always close the database connection
+         // Always close the database connection
 
         // Log the result
         if (rowsAffected > 0) {
@@ -729,18 +706,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void updateUser(User user) {
+    public boolean updateUser(long userId, String username, String email, String firstName, String lastName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_USERNAME, user.getUsername());
-        values.put(COLUMN_EMAIL, user.getEmail());
-        values.put(COLUMN_FIRST_NAME, user.getFirstName());
-        values.put(COLUMN_LAST_NAME, user.getLastName());//or however you name your fields
+        values.put(COLUMN_USERNAME, username);
+        values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_FIRST_NAME, firstName);
+        values.put(COLUMN_LAST_NAME, lastName);
 
-        // Update the user based on user ID
-        db.update("users", values, "id = ?", new String[]{String.valueOf(user.getId())});
-        db.close(); // Close the database connection
+        // Update user record and get the number of rows affected
+        int rowsAffected = db.update(TABLE_USER, values, "id = ?", new String[]{String.valueOf(userId)});
+
+        // Return true if at least one row was updated, otherwise false
+        return rowsAffected > 0;
     }
+
+
 
     public boolean updateApplicationStatus(long applicationId, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -765,7 +746,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.close();
         }
-        db.close();
+
         return exists;
     }
 
@@ -787,7 +768,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
+
         return vendor;
     }
 
@@ -992,12 +973,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return vendorId;
     }
-
-
-
-
-
-
 
 
 

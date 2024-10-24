@@ -3,6 +3,7 @@ package com.example.cs218marketmanager;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,10 +31,10 @@ public class EditProfileActivity extends AppCompatActivity {
     private static final int IMAGE_CAPTURE_CODE = 101;
 
     private ImageView profileImageView, productImageView;
-    private EditText editTextEmail;
-    private EditText editTextUsername; // Define EditText fields
-    private Bitmap profileImageBitmap, productImageBitmap; // For saving/restoring image states
-    private int currentPhotoTarget; // To track which button was clicked
+    private EditText editTextEmail, editFirstName, editLastName;
+    private EditText editTextUsername;
+    private Bitmap profileImageBitmap, productImageBitmap;
+    private int currentPhotoTarget;
     private DatabaseHelper databaseHelper;
     private PreferencesHelper preferencesHelper;
 
@@ -41,29 +42,27 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_edit_vendor_profile); // Set before
+        setContentView(R.layout.fragment_edit_vendor_profile);
 
         // Initialize Views
         profileImageView = findViewById(R.id.editProfilePicture);
         productImageView = findViewById(R.id.imageViewProductPhoto);
-
-        // Initialize EditText fields
-        editTextUsername = findViewById(R.id.editUserName); // Ensure IDs match your layout
-        EditText editTextFirstname = findViewById(R.id.editFirstName);
-        EditText editTextLastName = findViewById(R.id.editLastName);
+        editTextUsername = findViewById(R.id.editUserName);
+        editFirstName = findViewById(R.id.editFirstName);
+        editLastName = findViewById(R.id.editLastName);
         editTextEmail = findViewById(R.id.editTextEmail);
 
         // Initialize Buttons
         Button uploadProfilePictureButton = findViewById(R.id.uploadProPicButton);
         Button uploadProductPhotoButton = findViewById(R.id.uploadProdPicButton);
         Button cancelButton = findViewById(R.id.cancelButton);
-        View saveProfileButton = findViewById(R.id.saveProfileButton);
+        Button saveProfileButton = findViewById(R.id.saveProfileButton); // Changed to Button type
 
         databaseHelper = new DatabaseHelper(this);
         preferencesHelper = new PreferencesHelper(this);
 
         // Load current profile and product photos from the database
-        loadCurrentImages();
+        loadCurrentUserDetailsAndImages();
 
         // Set OnClickListeners for Camera buttons
         uploadProfilePictureButton.setOnClickListener(v -> {
@@ -77,45 +76,58 @@ public class EditProfileActivity extends AppCompatActivity {
         });
 
         // Save the image and other changes to the database
-        saveProfileButton.setOnClickListener(v -> {
-            String firstName = editTextFirstname.getText().toString();
-            String lastName = editTextLastName.getText().toString();
+        saveProfileButton.setOnClickListener(view -> {
+            String firstName = editLastName.getText().toString();
+            String lastName = editLastName.getText().toString();
             String email = editTextEmail.getText().toString();
             String username = editTextUsername.getText().toString();
-            long userId = preferencesHelper.getUserId(); // Get the userId here
 
-            // Create a new User object with updated data
-            User updatedUser = new User(userId, username, email, firstName, lastName);
-
-            // Save images to the database before updating user
-            if (profileImageBitmap != null) {
-                saveImageToDatabase(profileImageBitmap, true); // Save profile image
+            SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+            Long userId = prefs.getLong("userId", -1L);
+            if (userId != -1) {
+                // Save images to the database before updating user
+                if (profileImageBitmap != null) {
+                    saveImageToDatabase(profileImageBitmap, true);
+                }
+                if (productImageBitmap != null) {
+                    saveImageToDatabase(productImageBitmap, false);
+                }
+                boolean isUpdated = databaseHelper.updateUser(userId, username, email, firstName, lastName);
+                if (isUpdated) {
+                    Toast.makeText(EditProfileActivity.this, "User updated successfully!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(EditProfileActivity.this, VendorProfileActivity.class);
+                    startActivity(intent);
+                    finish(); // End the EditProfileActivity
+                } else {
+                    Toast.makeText(EditProfileActivity.this, "Failed to update user", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "User ID not found", Toast.LENGTH_SHORT).show();
             }
-            if (productImageBitmap != null) {
-                saveImageToDatabase(productImageBitmap, false); // Save product image
-            }
-
-            // Update the user in the database
-            databaseHelper.updateUser(updatedUser);
-
-            // Create an Intent to navigate back to the profile screen
-            Intent intent = new Intent(EditProfileActivity.this, VendorProfileActivity.class); // Adjust to match your profile screen's class
-            intent.putExtra("UpdatedUser", updatedUser.getId()); // Pass the updated user
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear the backstack
-            startActivity(intent);
-            finish(); // End the EditProfileActivity
         });
 
         // Discard changes and restore the original state
         cancelButton.setOnClickListener(v -> {
-            loadCurrentImages(); // Reload the original images
+            loadCurrentUserDetailsAndImages(); // Reload the original images
             Toast.makeText(EditProfileActivity.this, "Changes discarded", Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void loadCurrentImages() {
-        long userId = preferencesHelper.getUserId(); // Get user ID from preferences
+    private void loadCurrentUserDetailsAndImages() {
+        long userId = preferencesHelper.getUserId();
         if (userId != -1) {
+            // Load user details
+            User user = databaseHelper.getUserById(userId);
+            if (user != null) {
+                editTextUsername.setText(user.getUsername());
+                editTextEmail.setText(user.getEmail());
+                // Assuming you have getter methods for first and last names
+                editFirstName.setText(user.getFirstName());
+                editLastName.setText(user.getLastName());
+            } else {
+                Toast.makeText(this, "User details not found", Toast.LENGTH_SHORT).show();
+            }
+
             // Load the profile picture from the USER table
             byte[] profileImageBytes = databaseHelper.getUserProfilePicture(userId);
             if (profileImageBytes != null) {
@@ -137,7 +149,7 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == IMAGE_CAPTURE_CODE && resultCode == RESULT_OK && data != null) {
+        if (requestCode == IMAGE_CAPTURE_CODE && resultCode == RESULT_OK) {
             Bitmap imageBitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
 
             if (imageBitmap != null) {
@@ -164,13 +176,11 @@ public class EditProfileActivity extends AppCompatActivity {
         long userId = preferencesHelper.getUserId();
         if (userId != -1) {
             if (isProfileImage) {
-                // Save the profile picture to the USER table
                 databaseHelper.addUserProfilePicture(userId, imageBytes);
                 Toast.makeText(this, "Profile picture saved to database", Toast.LENGTH_SHORT).show();
             } else {
-                // Before saving the product picture, check if the vendor exists
-                if (databaseHelper.vendorExists(userId)) { // Check if vendor exists for this user
-                    databaseHelper.addVendorProductPicture(userId, imageBytes); // Save the product image in VENDOR table
+                if (databaseHelper.vendorExists(userId)) {
+                    databaseHelper.addVendorProductPicture(userId, imageBytes);
                     Toast.makeText(this, "Product picture saved to database", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "Vendor details not found for user ID: " + userId, Toast.LENGTH_SHORT).show();
@@ -180,8 +190,6 @@ public class EditProfileActivity extends AppCompatActivity {
             Toast.makeText(this, "User ID not found", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     // Camera Functionalities
     private void handleCameraPermission() {

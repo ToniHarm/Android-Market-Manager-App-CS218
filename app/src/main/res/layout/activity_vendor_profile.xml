@@ -148,9 +148,10 @@
 
                 <ImageView
                     android:id="@+id/imageViewProductPhoto"
-                    android:layout_width="wrap_content"
+                    android:layout_width="289dp"
                     android:layout_height="133dp"
-                    android:layout_margin="0dp"/>
+                    android:layout_margin="0dp"
+                    android:src="@drawable/vegetable_market"/>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
