@@ -5,6 +5,7 @@ import java.util.List;
 public class Vendor {
     private long id; // Vendor ID
     private long userId; // User ID
+    private String username;
     private String firstName; // First name of the user
     private String lastName; // Last name of the user
     private String email; // Email of the user
@@ -19,9 +20,10 @@ public class Vendor {
 
     }
     // Constructor
-    public Vendor(long id, long userId, String firstName, String lastName, String email, List<String> products, String stallNumber,  double balance, double fine, double payment) {
+    public Vendor(long id, long userId, String username, String firstName, String lastName, String email, List<String> products, String stallNumber,  double balance, double fine, double payment) {
         this.id = id;
         this.userId = userId;
+        this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -111,5 +113,17 @@ public class Vendor {
 
     public void setPayment(double payment) {
         this.payment = payment;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 }

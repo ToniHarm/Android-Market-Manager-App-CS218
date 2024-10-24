@@ -70,4 +70,6 @@ dependencies {
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
     implementation(kotlin("script-runtime"))
+    implementation("com.google.android.gms:play-services-maps:18.1.0") // Google Maps dependency
+    implementation("com.google.android.gms:play-services-location:19.0.1")
 }

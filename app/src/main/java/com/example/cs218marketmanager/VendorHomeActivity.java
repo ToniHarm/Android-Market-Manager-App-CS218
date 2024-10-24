@@ -19,11 +19,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cs218marketmanager.data.DatabaseHelper;
 import com.example.cs218marketmanager.util.PreferencesHelper;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
-public class VendorHomeActivity extends AppCompatActivity {
+public class VendorHomeActivity extends AppCompatActivity implements OnMapReadyCallback {
     private TextView textViewStatus, textStallnumber, textSelectedStall;
     private Button vendorAppButton, saveButton;
     private GridLayout gridLayoutStalls;
@@ -31,6 +37,7 @@ public class VendorHomeActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
     private BottomNavigationView bnv;
     private CheckBox selectedStallCheckBox = null;
+    private GoogleMap mMap;
 
     //For refreshing
     private ActivityResultLauncher<Intent> vendorAppLauncher = registerForActivityResult(
@@ -71,6 +78,12 @@ public class VendorHomeActivity extends AppCompatActivity {
             finish();
         }
 
+        // Get the SupportMapFragment and register for the map ready callback
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this); // Async call to load the map
+        }
 
         // Application button to launch the VendorApplicationActivity for Refreshing
         vendorAppButton.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +91,7 @@ public class VendorHomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(VendorHomeActivity.this, VendorApplicationActivity.class);
                 intent.putExtra("userId", preferencesHelper.getUserId());
-                vendorAppLauncher.launch(intent);  // Use the launcher to start the activity
+                vendorAppLauncher.launch(intent);
             }
         });
 
@@ -89,6 +102,7 @@ public class VendorHomeActivity extends AppCompatActivity {
             if (applicationStatus != null && !applicationStatus.isEmpty()) {
                 // Display the application status in a TextView
                 textViewStatus.setText("Application Status: " + applicationStatus);
+                vendorAppButton.setVisibility(View.GONE);
 
                 // Check if the application is APPROVED
                 if ("APPROVED".equalsIgnoreCase(applicationStatus)) {
@@ -284,4 +298,17 @@ public class VendorHomeActivity extends AppCompatActivity {
             Toast.makeText(this, "Invalid user ID!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker for Suva Municipal Market (Example LatLng coordinates)
+        LatLng suvaMarket = new LatLng(-18.136160894299973, 178.4250712491223);  // Example coordinates for Suva Market
+        mMap.addMarker(new MarkerOptions().position(suvaMarket).title("Suva Municipal Market"));
+
+        // Move camera to the location and set zoom level
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(suvaMarket, 15f));
+    }
+
 }

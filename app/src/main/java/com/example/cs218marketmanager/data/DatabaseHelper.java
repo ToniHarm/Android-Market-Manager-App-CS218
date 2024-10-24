@@ -157,7 +157,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_ROLE, user.getRole().toString());
 
         long result = db.insert(TABLE_USER, null, values);
-        db.close();
         return result;
     }
 
@@ -196,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_STATUS, status); // Ensure status is correct
 
         db.insert(TABLE_VENDOR_APPLICATION, null, values);
-        db.close();
+
     }
 
     // Method to save vendor details into the vendor table
@@ -208,7 +207,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_PRODUCT_NAME, joinedProductNames);
 
         long result = db.insert(TABLE_VENDOR, null, values);
-        db.close();
+
         return result != -1;
     }
 
@@ -219,7 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_STALL_NUMBER, (String) null); // Setting stall number to null
 
         long result = db.update(TABLE_VENDOR, values, "user_id = ?", new String[]{String.valueOf(userId)});
-        db.close();
+
         return result != -1;
     }
 
@@ -232,7 +231,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_TOTAL_BALANCE, 100);
 
         long result = db.update(TABLE_VENDOR, values, "user_id = ?", new String[]{String.valueOf(userId)});
-        db.close();
+
         return result != -1; // Return true if the update was successful
     }
 
@@ -252,7 +251,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
+
         return takenStalls;
     }
 
@@ -308,7 +307,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
         }
 
-        db.close();
+
         return vendor;
     }
 
@@ -341,7 +340,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         cursor.close();
-        db.close();
+
         return user;
     }
     public boolean usernameExists(String username){
@@ -451,6 +450,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null; // Return null if no details are found
     }
 
+    public List<Vendor> getAllVendors() {
+        List<Vendor> vendorList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // SQL query to join user and vendor tables, and concatenate first name and last name
+        String query = "SELECT u.id AS user_id, u.username, u.firstName, u.lastName, " +
+                "u.email, v.id AS vendor_id, v.product_name, v.stallNumber, v.balance " +
+                "FROM users u " +
+                "INNER JOIN vendors v ON u.id = v.user_id";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        // Loop through the cursor and add vendor details to the list
+        if (cursor.moveToFirst()) {
+            do {
+                long userId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_USER_ID)); // Fetch user ID
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_VENDOR_ID)); // Fetch vendor ID
+                String username = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
+                String firstname = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+                String lastname = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+                String email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL));
+
+                // Assuming a single product for simplicity; if you need a list, modify accordingly
+                String productType = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_NAME));
+                String stallNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STALL_NUMBER));
+                double balance = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_TOTAL_BALANCE));
+
+                // Create a list for products (adjust this as per your database structure)
+                List<String> productList = new ArrayList<>();
+                if (productType != null) {
+                    productList.add(productType);
+                }
+
+                // Create a new Vendor object and add it to the list
+                Vendor vendor = new Vendor(id, userId, username, firstname, lastname, email, productList, stallNumber, balance, 0, 0);
+                vendorList.add(vendor);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        return vendorList;
+    }
+
+
+
+
+
+
 
     public String getApplicationStatus(long userId) {
         String status = null;
@@ -501,7 +549,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
+
         return vendorApplication;
     }
 
@@ -553,7 +601,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
+
         return vendorApplications;
     }
 
@@ -589,7 +637,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.close();
         }
-        db.close();
+
 
         return managers; // Return the list of managers
     }
@@ -613,7 +661,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //            Log.e("DatabaseHelper", "Error deleting manager by email: " + email, e);
 //        } finally {
 //            // Close the database if necessary
-//            db.close();
+//
 //        }
 //
 //        return isDeleted;
@@ -630,7 +678,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Execute the delete query: only delete users where the role is MANAGER and the email matches
         int rowsAffected = db.delete("users", "email = ? AND role = ?", new String[]{email, "MANAGER"});
 
-        db.close(); // Always close the database connection
+         // Always close the database connection
 
         // Log the result
         if (rowsAffected > 0) {
@@ -672,7 +720,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
+
         return vendor;
     }
 
@@ -876,6 +924,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return vendorId;
     }
+
+    public boolean updateUserPassword(Long userId, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("password", newPassword); // Adjust the column name as needed
+
+        // Update the user password based on user ID
+        int result = db.update("users", contentValues, "id = ?", new String[]{userId.toString()});
+        return result > 0; // Return true if the update was successful
+    }
+
 
 
 
