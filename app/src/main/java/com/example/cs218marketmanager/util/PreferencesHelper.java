@@ -7,6 +7,7 @@ public class PreferencesHelper {
     private static final String PREFS_NAME = "user_prefs";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_USER_ID = "userId";
+    private static final String KEY_VENDOR_ID = "VENDOR_ID"; // Added constant for vendorId
 
     private final SharedPreferences sharedPreferences;
 
@@ -32,6 +33,16 @@ public class PreferencesHelper {
     // Method to get userId
     public long getUserId() {
         return sharedPreferences.getLong(KEY_USER_ID, -1);
+    }
+
+    // New method for saving vendorId
+    public void saveVendorId(long vendorId) {
+        sharedPreferences.edit().putLong(KEY_VENDOR_ID, vendorId).apply(); // Saving vendorId
+    }
+
+    // Method to get vendorId
+    public Long getVendorId() {
+        return sharedPreferences.getLong(KEY_VENDOR_ID, -1);
     }
 
     // Optional: Method to clear all stored preferences

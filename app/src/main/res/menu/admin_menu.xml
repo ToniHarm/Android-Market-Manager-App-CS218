@@ -10,4 +10,9 @@
         android:icon="@drawable/applied"
         android:title="@string/registration" />
 
+    <item
+        android:id="@+id/admin_setting"
+        android:icon="@drawable/ic_action_name"
+        android:title="@string/setting" />
+
 </menu>

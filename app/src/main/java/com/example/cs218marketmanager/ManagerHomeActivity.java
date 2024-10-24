@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,38 +16,48 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class ManagerHomeActivity extends AppCompatActivity {
     private PreferencesHelper preferencesHelper;
+    private DatabaseHelper databaseHelper;
     private BottomNavigationView bnv;
-
-    private TextView textViewFirstName;
-    private DatabaseHelper databaseHelper; // Add a database helper
-
+    private TextView profileDetailsTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manager_home);
+        super.onCreate(savedInstanceState); // Call this first to properly initialize
 
+        // Initialize preferences and database helpers
+        preferencesHelper = new PreferencesHelper(this);
         databaseHelper = new DatabaseHelper(this);
 
-        preferencesHelper = new PreferencesHelper(this);
-        Long userId = preferencesHelper.getUserId();
-
-
-        if (userId == null || userId.toString().isEmpty()) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-            return;
+        // Check if user ID is valid
+        Long id = preferencesHelper.getUserId();
+        if (id == null || id == -1) {
+            navigateToLogin();
+            return; // Exit the method early
         }
 
+        setContentView(R.layout.activity_manager_home);
+        profileDetailsTextView = findViewById(R.id.profileDetailsTextView);
+        bnv = findViewById(R.id.manager_nav_view);
 
+        // Fetch and display user details
+        User user = databaseHelper.getUserById(id);
+        if (user != null) {
+            displayUserDetails(user);
+        } else {
+            Toast.makeText(this, "User not found!", Toast.LENGTH_SHORT).show();
+        }
 
-        // Initialize the TextView for manager details
-        textViewFirstName = findViewById(R.id.textViewFirstName);
+        // Set up bottom navigation
+        setupBottomNavigation();
+    }
 
-        // Display manager details
-        displayManagerDetails(userId);
+    private void navigateToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
+    private void setupBottomNavigation() {
         bnv = findViewById(R.id.manager_nav_view);
         bnv.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
@@ -55,18 +66,20 @@ public class ManagerHomeActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.manager_home) {
                     // Do nothing, as we are already in HomeFragment
                     return true;
-                }
-                else if (item.getItemId() == R.id.profile_vendors) {
-                    Intent intent = new Intent(ManagerHomeActivity.this, ViewVendorAccountsActivity.class);
-                    startActivity(intent);
-                    return true;}
-
-                else if (item.getItemId() == R.id.manager_application) {
-                    Intent intent = new Intent(ManagerHomeActivity.this, VendorApprovalActivity.class);
+                } else if (item.getItemId() == R.id.manager_application) {
+                    Intent intent = new Intent(ManagerHomeActivity.this, ManagerApprovalActivity.class);
                     startActivity(intent);
                     return true;
                 } else if (item.getItemId() == R.id.manager_payment) {
-                    Intent intent = new Intent(ManagerHomeActivity.this, NotificationActivity.class);
+                    Intent intent = new Intent(ManagerHomeActivity.this, ManagerAddPayment.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getItemId() == R.id.manager_vendors) {
+                    Intent intent = new Intent(ManagerHomeActivity.this, VendorListActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getItemId() == R.id.manager_setting) {
+                    Intent intent = new Intent(ManagerHomeActivity.this, SettingsActivity.class);
                     startActivity(intent);
                     return true;
                 }
@@ -76,17 +89,12 @@ public class ManagerHomeActivity extends AppCompatActivity {
         });
     }
 
-    // Method to retrieve and display the manager's details
-    private void displayManagerDetails(Long userId) {
-        // Fetch manager details directly from the database
-        User manager = databaseHelper.getUserById(userId);
-
-        // Check if the user exists and update the TextView
-        if (manager != null) {
-            String displayText = "Name: " + manager.getFirstName() + " " + manager.getLastName() + "\nEmail: " + manager.getEmail();
-            textViewFirstName.setText(displayText); // Set the manager's details in the TextView
-        } else {
-            textViewFirstName.setText("Manager details not found."); // Handle case where manager details aren't available
-        }
+    private void displayUserDetails(User user) {
+        profileDetailsTextView.setText(
+                "Username: " + user.getUsername() + "\n" +
+                        "Email: " + user.getEmail() + "\n" +
+                        "First Name: " + user.getFirstName() + "\n" +
+                        "Last Name: " + user.getLastName() + "\n"
+        );
     }
 }

@@ -7,11 +7,9 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-
-import com.example.cs218marketmanager.adapters.Manager;
 import com.example.cs218marketmanager.adapters.ManagerAdapter;
 import com.example.cs218marketmanager.data.DatabaseHelper;
+import com.example.cs218marketmanager.data.model.Manager;
 import com.example.cs218marketmanager.data.model.User;
 import com.example.cs218marketmanager.util.PreferencesHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -64,6 +62,10 @@ public class AdminHomeActivity extends AppCompatActivity {
                 return true;
             } else if (item.getItemId() == R.id.admin_register) {
                 Intent intent = new Intent(AdminHomeActivity.this, RegisterManagerActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (item.getItemId() == R.id.admin_setting) {
+                Intent intent = new Intent(AdminHomeActivity.this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
             }

@@ -19,11 +19,12 @@
             android:padding="16dp">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="329dp"
+                android:layout_height="229dp"
                 android:layout_gravity="center"
                 android:padding="10dp"
-                android:src="@drawable/marketmanagerhome" />
+                android:src="@drawable/manager_home"
+                android:background="@drawable/rounded_corners"/>
 
             <TextView
                 android:id="@+id/headingMarketManager"
@@ -60,16 +61,14 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Vendor First Name -->
-                    <!-- Manager Date of Birth -->
                     <TextView
-                        android:id="@+id/textViewFirstName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-
+                        android:id="@+id/profileDetailsTextView"
+                        android:layout_width="293dp"
+                        android:layout_height="152dp"
+                        android:layout_gravity="center"
+                        android:text="User Profile Details from db"
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
-
+                        android:textSize="18sp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

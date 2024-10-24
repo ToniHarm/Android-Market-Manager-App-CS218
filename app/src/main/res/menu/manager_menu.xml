@@ -15,8 +15,18 @@
         android:title="@string/application" />
 
     <item
+        android:id="@+id/manager_vendors"
+        android:icon="@drawable/vendor"
+        android:title="@string/vendor" />
+
+    <item
         android:id="@+id/manager_payment"
         android:icon="@drawable/money"
         android:title="@string/payment" />
+
+    <item
+        android:id="@+id/manager_setting"
+        android:icon="@drawable/ic_action_name"
+        android:title="@string/setting" />
 
 </menu>

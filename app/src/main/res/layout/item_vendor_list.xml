@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/limeGreen">
+
+        <!-- Vendor Username -->
+        <TextView
+            android:id="@+id/textViewUsername1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/vendor_username"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/roboto_medium"/>
+
+        <TextView
+            android:id="@+id/textViewFullName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Name: "
+            android:textColor="@color/white"
+            android:textSize="20sp"
+        android:textStyle="italic"
+        android:fontFamily="@font/roboto_italic"/>
+
+        <!-- Email -->
+        <TextView
+            android:id="@+id/textViewEmail1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Email: jdoe@gmail.com"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+        android:fontFamily="@font/roboto"/>
+
+        <!-- Product Type -->
+        <TextView
+            android:id="@+id/textViewProductType1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Product: Tomato"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_gravity="start"
+            android:fontFamily="@font/roboto"/>
+
+        <TextView
+            android:id="@+id/textViewStallNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Stall Number: 1"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:fontFamily="@font/roboto"/>
+
+        <TextView
+            android:id="@+id/textViewBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Balance Due: $50.00"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:fontFamily="@font/roboto_bold"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

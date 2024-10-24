@@ -68,7 +68,7 @@ public class RegisterManagerActivity extends Activity {
 
                 if (result > 0) {
                     Toast.makeText(RegisterManagerActivity.this, "Manager Registered successfully!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(RegisterManagerActivity.this, LoginActivity.class));
+                    startActivity(new Intent(RegisterManagerActivity.this, AdminHomeActivity.class));
                 } else {
                     Toast.makeText(RegisterManagerActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
                 }
@@ -88,6 +88,10 @@ public class RegisterManagerActivity extends Activity {
                     return true;
                 } else if (item.getItemId() == R.id.admin_register) {
                     // Handle admin register action if needed
+                } else if (item.getItemId() == R.id.admin_setting) {
+                    Intent intent = new Intent(RegisterManagerActivity.this, SettingsActivity.class);
+                    startActivity(intent);
+                    return true;
                 }
                 return false; // Default return false for unhandled cases
             }

@@ -10,7 +10,7 @@ public class ViewVendorAccountsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_manager_viewvendors); // Use the correct layout for the activity
+        setContentView(R.layout.item_vendor_list); // Use the correct layout for the activity
 
     }
 
