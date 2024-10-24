@@ -810,21 +810,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return stallNumbers;
     }
 
-    public boolean vendorExists(long userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_VENDOR,
-                new String[]{COLUMN_ID}, // Select only the vendor ID to check existence
-                COLUMN_USER_ID + "=?",
-                new String[]{String.valueOf(userId)},
-                null, null, null);
-
-        boolean exists = cursor != null && cursor.moveToFirst();
-        if (cursor != null) {
-            cursor.close();
-        }
-        db.close();
-        return exists;
-    }
 
     public long getVendorIdByStallNumber(String stallNumber) {
         SQLiteDatabase db = this.getReadableDatabase();

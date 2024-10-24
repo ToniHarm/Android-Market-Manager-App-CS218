@@ -65,7 +65,11 @@ public class VendorHomeActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 } else if (item.getItemId() == R.id.vendor_finance) {
-                    Intent intent = new Intent(VendorHomeActivity.this, FinanceFragment.class);
+                    Intent intent = new Intent(VendorHomeActivity.this, VendorFinanceActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getItemId() == R.id.vendor_setting) {
+                    Intent intent = new Intent(VendorHomeActivity.this, SettingsActivity.class);
                     startActivity(intent);
                     return true;
                 }
