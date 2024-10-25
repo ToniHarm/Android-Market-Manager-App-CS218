@@ -122,16 +122,53 @@
         app:layout_constraintTop_toBottomOf="@+id/lastNameEditText" />
 
 
+    <EditText
+        android:id="@+id/etSecurityQuestion"
+        android:layout_width="300dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="68dp"
+        android:background="@drawable/input_bg"
+        android:drawableLeft="@drawable/ic_security"
+        android:drawablePadding="10dp"
+        android:hint="Security Question"
+        android:inputType="text"
+        android:paddingLeft="20dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lastNameEditText" />
+
+    <EditText
+        android:id="@+id/etSecurityAnswer"
+        android:layout_width="300dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="120dp"
+        android:background="@drawable/input_bg"
+        android:drawableLeft="@drawable/ic_security"
+        android:drawablePadding="10dp"
+        android:hint="Security Answer"
+        android:inputType="text"
+        android:paddingLeft="20dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lastNameEditText" />
+
     <Button
         android:id="@+id/completeRegisterButton"
         android:layout_width="300dp"
         android:layout_height="48dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="120dp"
         android:background="@drawable/btn_bg"
+        android:backgroundTint="@color/darkGreen"
         android:text="Register"
         android:textColor="@color/white"
-        android:backgroundTint="@color/darkGreen"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordRegisterEditText" />
 
@@ -139,10 +176,10 @@
         android:id="@+id/textViewExistingUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="40dp"
+        android:clickable="true"
         android:text="Already have an account? Login"
         android:textColor="@color/black"
-        android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/completeRegisterButton" />

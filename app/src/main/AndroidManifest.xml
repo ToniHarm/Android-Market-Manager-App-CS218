@@ -5,6 +5,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+
     <uses-feature android:name="android.hardware.camera"/>
 
     <application
@@ -50,8 +55,15 @@
         <activity android:name=".ManagerAddPayment"/>
         <activity android:name=".NotificationActivity"/>
         <activity android:name=".EditProfileActivity" />
+        <activity android:name=".VendorListActivity"/>
+        <activity android:name=".ForgetPasswordActivity"/>
 
-
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDziLKVgHTsCWJGjkthYay3u8CdM559qfs"/>
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 

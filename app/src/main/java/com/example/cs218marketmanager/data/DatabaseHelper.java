@@ -36,6 +36,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_EMAIL = "email";
     private static final String COLUMN_PASSWORD = "password";
     private static final String COLUMN_FIRST_NAME = "firstName";
+    private static final String COLUMN_SECURITY_QUESTION = "Sec_Question";
+    private static final String COLUMN_SECURITY_ANSWER = "Sec_Answer";
     private static final String COLUMN_LAST_NAME = "lastName";
     private static final String COLUMN_PROFILE_PIC = "profilePic";
     private static final String COLUMN_ROLE = "role";
@@ -72,7 +74,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
@@ -83,6 +84,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_LAST_NAME + " TEXT,"
                 + COLUMN_PROFILE_PIC + " BLOB,"
                 + COLUMN_PASSWORD + " TEXT,"
+                + COLUMN_SECURITY_QUESTION + " TEXT, " // New column for security question
+                + COLUMN_SECURITY_ANSWER + " TEXT, "   // New column for security answer
                 + COLUMN_ROLE + " TEXT" +
                 ")";
         db.execSQL(CREATE_USER_TABLE);
@@ -102,12 +105,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_PRODUCT_NAME + " TEXT, "
                 + COLUMN_STALL_NUMBER + " TEXT, "
                 + COLUMN_RENT + " TEXT, "
-                + COLUMN_PRODUCT_PIC + " BLOB,"
+                + COLUMN_PRODUCT_PIC + " BLOB, "
                 + COLUMN_TOTAL_BALANCE + " REAL DEFAULT 0.0, "
                 + COLUMN_TOTAL_FINES + " REAL DEFAULT 0.0, "
                 + COLUMN_TOTAL_PAYMENT + " REAL DEFAULT 0.0, "
                 + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
         db.execSQL(CREATE_VENDOR_TABLE);
+
 
         // Create PAYMENT table
         String CREATE_PAYMENT_TABLE = "CREATE TABLE " + TABLE_PAYMENT + " ("
@@ -144,7 +148,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE)";
             db.execSQL(CREATE_NOTIFICATION_TABLE);
         }
-    };
+    }
     public long addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -540,6 +544,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null; // Return null if no details are found
     }
 
+    public List<Vendor> getAllVendors() {
+        List<Vendor> vendorList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // SQL query to join user and vendor tables, and concatenate first name and last name
+        String query = "SELECT u.id AS user_id, u.username, u.firstName, u.lastName, " +
+                "u.email, v.id AS vendor_id, v.product_name, v.stallNumber, v.balance " +
+                "FROM users u " +
+                "INNER JOIN vendors v ON u.id = v.user_id";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        // Loop through the cursor and add vendor details to the list
+        if (cursor.moveToFirst()) {
+            do {
+                long userId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_USER_ID)); // Fetch user ID
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_VENDOR_ID)); // Fetch vendor ID
+                String username = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
+                String firstname = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+                String lastname = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+                String email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL));
+
+                // Assuming a single product for simplicity; if you need a list, modify accordingly
+                String productType = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_NAME));
+                String stallNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STALL_NUMBER));
+                double balance = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_TOTAL_BALANCE));
+
+                // Create a list for products (adjust this as per your database structure)
+                List<String> productList = new ArrayList<>();
+                if (productType != null) {
+                    productList.add(productType);
+                }
+
+                // Create a new Vendor object and add it to the list
+                Vendor vendor = new Vendor(id, userId, username, firstname, lastname, email, productList, stallNumber, balance, 0, 0);
+                vendorList.add(vendor);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        return vendorList;
+    }
+
+
+
+
+
+
 
     public String getApplicationStatus(long userId) {
         String status = null;
@@ -788,7 +841,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return stallNumbers;
     }
 
-
     public long getVendorIdByStallNumber(String stallNumber) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM vendors WHERE stallNumber = ?", new String[]{stallNumber});
@@ -974,6 +1026,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return vendorId;
     }
 
+    public boolean updateUserPassword(Long userId, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("password", newPassword); // Adjust the column name as needed
 
+        // Update the user password based on user ID
+        int result = db.update("users", contentValues, "id = ?", new String[]{userId.toString()});
+        return result > 0; // Return true if the update was successful
+    }
+
+
+
+
+
+
+
+    // Method to verify username, security question, and security answer
+    public boolean verifySecurityAnswer(String username, String securityQuestion, String securityAnswer) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USERNAME + "=? AND " +
+                COLUMN_SECURITY_QUESTION + "=? AND " + COLUMN_SECURITY_ANSWER + "=?";
+        Cursor cursor = db.rawQuery(query, new String[]{username, securityQuestion, securityAnswer});
+
+        boolean isValid = cursor.getCount() > 0;
+        cursor.close();
+
+        return isValid;
+    }
+
+    // Method to update the password
+    public void updatePassword(String username, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PASSWORD, newPassword);
+
+        db.update(TABLE_USER, values, COLUMN_USERNAME + "=?", new String[]{username});
+
+    }
 
 }
