@@ -102,7 +102,7 @@ public class ManagerAddPayment extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
                 // Handle case when nothing is selected (optional, but good for UX)
                 TextView textViewBalanceDue = findViewById(R.id.textBalancedue);
-                textViewBalanceDue.setText("Balance Due: N/A"); // Or any default message
+                textViewBalanceDue.setText("Balance Due: N/A");
                 Toast.makeText(ManagerAddPayment.this, "No stall selected. Please choose one.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -163,6 +163,9 @@ public class ManagerAddPayment extends AppCompatActivity {
                     if (success) {
                         databaseHelper.createNotification(vendorId, "A payment of $" + paymentAmount + " has been received for stall " + selectedStall + ".");
                         Toast.makeText(ManagerAddPayment.this, "Payment added successfully", Toast.LENGTH_SHORT).show();
+                        editTextPaymentAmount.setText("");
+                        editTextPaymentDate.setText("");
+                        editTextPaymentDescription.setText("");
                         recreate();
                     } else {
                         Toast.makeText(ManagerAddPayment.this, "Failed to add payment", Toast.LENGTH_SHORT).show();
@@ -202,6 +205,7 @@ public class ManagerAddPayment extends AppCompatActivity {
                     if (success) {
                         databaseHelper.createNotification(vendorId, "A fine has been issued to you.");
                         Toast.makeText(ManagerAddPayment.this, "Fine added successfully", Toast.LENGTH_SHORT).show();
+                        editTextFineAmount.setText("");
                         recreate();
                     } else {
                         Toast.makeText(ManagerAddPayment.this, "Failed to add fine", Toast.LENGTH_SHORT).show();

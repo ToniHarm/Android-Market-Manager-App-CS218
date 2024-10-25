@@ -12,25 +12,28 @@
         android:orientation="vertical"
         android:padding="16dp"
         android:layout_marginTop="30dp">
-    <!-- Notification Title -->
-    <TextView
-        android:id="@+id/notificationTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notifications"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:layout_marginBottom="16dp" />
 
-    <!-- RecyclerView for the list of notifications -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewNotifications"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:scrollbars="vertical" />
+        <!-- Notification Title -->
+        <TextView
+            android:id="@+id/notificationTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notifications"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp" />
+
+        <!-- RecyclerView for the list of notifications -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewNotifications"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:scrollbars="vertical" />
     </LinearLayout>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
         android:layout_width="0dp"
@@ -44,4 +47,3 @@
         app:backgroundTint="@color/mossGreen"
         app:menu="@menu/vendor_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>
-

@@ -216,7 +216,7 @@ public class VendorProfileActivity extends AppCompatActivity {
 
     private void displayUserDetails(User user) {
         profileDetailsTextView.setText(
-                "Username: " + user.getUsername() + "\n" +
+                "" + user.getUsername() + "\n" +
                         "Email: " + user.getEmail() + "\n" +
                         "First Name: " + user.getFirstName() + "\n" +
                         "Last Name: " + user.getLastName() + "\n"

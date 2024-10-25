@@ -12,7 +12,7 @@
     <string name="registration">Registration</string>
     <string name="payment">Payment</string>
     <string name="vendor">Vendors</string>
-    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_splash">Market Manager</string>
     <string name="splash_logo_desc">Logo of the Market Manager App</string>
     <string name="welcome_msg">Welcome to Market Manager</string>
     <string name="take_photo">Take Photo</string>

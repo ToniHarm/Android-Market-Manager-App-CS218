@@ -1,176 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/green_background">
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/nav_view">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_marginTop="30dp">
+            android:padding="16dp">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="10dp"
-                    android:src="@drawable/marketmanagerhome" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:src="@drawable/marketmanagerhome" />
 
-                <TextView
-                    android:id="@+id/headingMarketManager"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="1dp"
-                    android:padding="5dp"
-                    android:text="Market Manager"
-                    android:textColor="@color/black"
-                    android:textSize="35sp"
-                    android:textStyle="bold" />
+            <!-- Title -->
+            <TextView
+                android:id="@+id/headingMarketManager"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Market Manager"
+                android:textColor="@color/black"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:paddingTop="10dp" />
 
-                <TextView
-                    android:id="@+id/headingLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="24dp"
-                    android:text="Location: Suva Municipal Market"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+            <!-- Location Text -->
+            <TextView
+                android:id="@+id/headingLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Location: Suva Municipal Market"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingBottom="24dp" />
 
-                <Button
-                    android:id="@+id/btnVendorApp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/limeGreen"
-                    android:text="Apply to be a vendor"
-                    android:textSize="15sp" />
+            <!-- Apply Button -->
+            <Button
+                android:id="@+id/btnVendorApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Apply to be a Vendor"
+                android:textSize="16sp"
+                android:backgroundTint="@color/limeGreen"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="16dp" />
 
+            <!-- Application Status Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp">
 
-            <LinearLayout
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/textViewEditProductType"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="Application"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/textViewStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Status: Pending"
-                    android:textColor="@color/darkGreen"
-                    android:layout_marginBottom="5dp"
-                    android:textSize="16sp"
-                    android:textStyle="italic" />
-                <TextView
-                    android:id="@+id/textSelectedStall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" />
-                <TextView
-                    android:id="@+id/textStallnumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Select Stall Number:"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-                <GridLayout
-                    android:id="@+id/gridLayoutStalls"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:columnCount="5"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="16dp"
-                    android:visibility="gone"> <!-- Hide by default -->
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <CheckBox
+                    <!-- Application Title -->
+                    <TextView
+                        android:id="@+id/textViewEditProductType"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1" />
-                    <CheckBox
+                        android:text="Application"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- Status Text -->
+                    <TextView
+                        android:id="@+id/textViewStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="2" />
-                    <CheckBox
+                        android:text="Status: Pending"
+                        android:textColor="@color/darkGreen"
+                        android:textSize="16sp"
+                        android:textStyle="italic"
+                        android:layout_marginBottom="10dp" />
+
+                    <TextView
+                        android:id="@+id/textSelectedStall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3" />
-                    <CheckBox
+                        android:visibility="gone" />
+
+                    <!-- Select Stall Number -->
+                    <TextView
+                        android:id="@+id/textStallnumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="4" />
-                    <CheckBox
+                        android:text="Select Stall Number:"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- GridLayout for Stall Numbers -->
+                    <GridLayout
+                        android:id="@+id/gridLayoutStalls"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:columnCount="5"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="16dp">
+
+                        <!-- Stall Checkboxes -->
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1" />
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2" />
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3" />
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4" />
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="5" />
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="6" />
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7" />
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="8" />
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="9" />
+                        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10" />
+                    </GridLayout>
+
+                    <!-- Submit Button -->
+                    <Button
+                        android:id="@+id/saveButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="5" />
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="6" />
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="7" />
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="8" />
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="9" />
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="10" />
-                </GridLayout>
-                <Button
-                    android:id="@+id/saveButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Submit"
-                    android:layout_gravity="right"
-                    android:backgroundTint="@color/darkGreen"
-                    android:layout_margin="5dp" />
-            </LinearLayout>
+                        android:text="Submit"
+                        android:textSize="14sp"
+                        android:backgroundTint="@color/darkGreen"
+                        android:textColor="@android:color/white"
+                        android:layout_gravity="end" />
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
+
+            <!-- Stall Map -->
             <TextView
                 android:id="@+id/textStallMap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:text="Location of Stalls"
                 android:textColor="@color/black"
-                android:layout_gravity="center"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp" />
 
             <ImageView
                 android:layout_width="360dp"
@@ -178,26 +170,28 @@
                 android:padding="10dp"
                 android:src="@drawable/stall_map" />
 
+            <!-- Map Fragment -->
             <TextView
                 android:id="@+id/textViewMap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:text="Location of Market"
                 android:textColor="@color/black"
-                android:layout_gravity="center"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp" />
 
             <fragment
                 android:id="@+id/map"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp" />
         </LinearLayout>
-
     </ScrollView>
+
+    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
         android:layout_width="0dp"
