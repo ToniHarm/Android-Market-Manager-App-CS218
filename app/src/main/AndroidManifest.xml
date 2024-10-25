@@ -55,6 +55,7 @@
         <activity android:name=".ManagerAddPayment"/>
         <activity android:name=".NotificationActivity"/>
         <activity android:name=".VendorListActivity"/>
+        <activity android:name=".EditProfileActivity"/>
 
 
         <meta-data

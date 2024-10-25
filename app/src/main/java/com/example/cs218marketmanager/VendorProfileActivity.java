@@ -8,12 +8,14 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cs218marketmanager.data.DatabaseHelper;
@@ -192,16 +194,6 @@ public class VendorProfileActivity extends AppCompatActivity {
             profileImageView.setImageBitmap(profileImage);
         } else {
             profileImageView.setImageResource(R.drawable.profile_avatar); // Set a default image if none found
-        }
-    }
-
-    public void updateVendorApprovalStatus(long vendorId, boolean isApproved) {
-        Vendor vendor = databaseHelper.getVendorDetails(vendorId);
-        if (vendor != null) {
-            vendor.setApplicationApproved(isApproved);
-            editButton.setVisibility(isApproved ? View.VISIBLE : View.GONE);
-        } else {
-            Toast.makeText(this, "Vendor details not found!", Toast.LENGTH_SHORT).show();
         }
     }
 }
