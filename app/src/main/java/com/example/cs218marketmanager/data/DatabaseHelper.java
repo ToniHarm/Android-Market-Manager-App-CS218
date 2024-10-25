@@ -809,7 +809,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             vendor.setBalance(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_TOTAL_BALANCE)));
             vendor.setPayment(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_TOTAL_PAYMENT)));
             vendor.setFine(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_TOTAL_FINES)));
-            // Add any additional financial data you may have
         }
 
         cursor.close();
@@ -920,8 +919,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             // Insert fine into the vendors
             ContentValues fineValues = new ContentValues();
-            fineValues.put("fine", fineAmount);
-            long fineResult = db.insert("vendors", null, fineValues);
+            fineValues.put(COLUMN_TOTAL_FINES, fineAmount);
+            long fineResult = db.update("vendors", fineValues, "id = ?", new String[]{String.valueOf(vendorId)});
 
             // Commit the transaction
             db.setTransactionSuccessful();
