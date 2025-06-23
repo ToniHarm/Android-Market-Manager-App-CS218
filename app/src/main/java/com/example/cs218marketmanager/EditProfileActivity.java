@@ -77,7 +77,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // Save the image and other changes to the database
         saveProfileButton.setOnClickListener(view -> {
-            String firstName = editLastName.getText().toString();
+            String firstName = editFirstName.getText().toString();
             String lastName = editLastName.getText().toString();
             String email = editTextEmail.getText().toString();
             String username = editTextUsername.getText().toString();
@@ -109,7 +109,6 @@ public class EditProfileActivity extends AppCompatActivity {
         // Discard changes and restore the original state
         cancelButton.setOnClickListener(v -> {
             loadCurrentUserDetailsAndImages(); // Reload the original images
-            Toast.makeText(EditProfileActivity.this, "Changes discarded", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -121,7 +120,6 @@ public class EditProfileActivity extends AppCompatActivity {
             if (user != null) {
                 editTextUsername.setText(user.getUsername());
                 editTextEmail.setText(user.getEmail());
-                // Assuming you have getter methods for first and last names
                 editFirstName.setText(user.getFirstName());
                 editLastName.setText(user.getLastName());
             } else {
