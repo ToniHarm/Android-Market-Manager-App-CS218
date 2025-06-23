@@ -7,6 +7,8 @@
   <img width="225"  height="400" src="https://github.com/user-attachments/assets/05bafe56-ec4d-409a-8274-5ba5d7642e14" alt="screenshot2" />
   <img width="225"  height="400" src="https://github.com/user-attachments/assets/c9cc6ce5-909a-48aa-8fcb-a675456dda6b" alt="screenshot3" />
   <img width="225"  height="400" src="https://github.com/user-attachments/assets/ec7b5cc7-ec91-450b-ad72-60292a7e9658" alt="screenshot4" />
+  <img width="225"  height="400" src="https://github.com/user-attachments/assets/378acbbc-bb74-4622-8ec2-d8afe27bbb40" alt="screenshot5" />
+  <img width="225"  height="400" src="https://github.com/user-attachments/assets/e2de6465-2c90-4340-8623-504ee0b39509" alt="screenshot6" />
 </p>
 
 ## ✨ App Features
