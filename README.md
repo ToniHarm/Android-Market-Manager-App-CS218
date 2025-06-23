@@ -2,7 +2,12 @@
 
 **A Market Management Application (MMA)** built for CS218 that helps manage municipal markets, vendors, stalls, payments, and daily operations.
 
----
+<p align="center">
+  <img width="225" height="400" src="https://github.com/user-attachments/assets/c7374a3d-da94-469e-98a0-9c361cbb0a1d" alt="screenshot1" />
+  <img width="225"  height="400" src="https://github.com/user-attachments/assets/05bafe56-ec4d-409a-8274-5ba5d7642e14" alt="screenshot2" />
+  <img width="225"  height="400" src="https://github.com/user-attachments/assets/c9cc6ce5-909a-48aa-8fcb-a675456dda6b" alt="screenshot3" />
+  <img width="225"  height="400" src="https://github.com/user-attachments/assets/ec7b5cc7-ec91-450b-ad72-60292a7e9658" alt="screenshot4" />
+</p>
 
 ## ✨ App Features
 
