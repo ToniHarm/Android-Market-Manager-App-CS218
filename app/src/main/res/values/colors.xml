@@ -17,9 +17,11 @@
     <color name="darkGreen">#008D30</color>
     <color name="mossGreen">#024917</color>
     <color name="grey">#828282</color>
-    <color name="lightGrey">#C6C6C6</color>
+    <color name="lightGrey">#EAEAEA</color>
     <color name="blue">#07A6FF</color>
     <color name="darkBlue">#0066A0</color>
     <color name="limeGreen">#94C400</color>
     <color name="red">#DF2222</color>
+    <color name="deepGreen">#163619</color>
+    <color name="yellow">#FFC107</color>
 </resources>

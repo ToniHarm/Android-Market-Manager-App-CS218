@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- ScrollView to enable scrolling -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/manager_nav_view"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center_horizontal">
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="24dp"
+                android:text="Vendor Payment"
+                android:textColor="@color/black"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <!-- Stall Number Dropdown (Spinner) -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:numColumns="2">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="15dp"
+                    android:text="Stall Number: "
+                    android:fontFamily="@font/roboto_bold"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <Spinner
+                    android:id="@+id/spinnerStallNumber"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp" />
+            </GridLayout>
+
+            <!-- Balance Due Display -->
+            <TextView
+                android:id="@+id/textBalancedue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:hint="Balance due: $0.00"
+                android:background="@drawable/rounded_edittext_background"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Payment Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter Payment Details"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/roboto_bold"
+                android:padding="10dp" />
+
+            <!-- Payment Amount Input -->
+            <EditText
+                android:id="@+id/editTextAddPayment"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:padding="15dp"
+                android:hint="Payment Amount"
+                android:background="@drawable/rounded_edittext_background"
+                android:inputType="numberDecimal"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Payment Date Input -->
+            <EditText
+                android:id="@+id/editTextPaymentDate"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:padding="15dp"
+                android:hint="Payment Date"
+                android:background="@drawable/rounded_edittext_background"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Payment Description Input -->
+            <EditText
+                android:id="@+id/editTextPaymentDescription"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:padding="15dp"
+                android:hint="Payment Description"
+                android:background="@drawable/rounded_edittext_background"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Submit Payment Button -->
+            <Button
+                android:id="@+id/buttonSubmitPayment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/darkGreen"
+                android:text="Submit Payment"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/rounded_button_background" />
+
+            <!-- Fine Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Fine"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/roboto_bold"
+                android:padding="10dp" />
+
+            <!-- Fine Input -->
+            <EditText
+                android:id="@+id/editTextAddFine"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:padding="15dp"
+                android:hint="Fine Amount"
+                android:background="@drawable/rounded_edittext_background"
+                android:inputType="numberDecimal"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Submit Fine Button -->
+            <Button
+                android:id="@+id/buttonSubmitFine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/red"
+                android:text="Submit Fine"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/manager_nav_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:backgroundTint="@color/mossGreen"
+        app:menu="@menu/manager_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
